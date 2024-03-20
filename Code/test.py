@@ -1,0 +1,35 @@
+from XML import XML
+from lxml import etree
+
+def iterate_xml_elements(root, path=[]):
+    for element in root:
+        current_path = path + [element.tag]
+        print(f"Current Path: {'/'.join(current_path)}")
+        if len(element) > 0:
+            iterate_xml_elements(element, current_path)
+        else:
+            print(f"Leaf Node: {'/'.join(current_path)} - Text: {element.text}")
+
+
+if __name__ == "__main__":
+    # Test your XML class
+    tree = etree.parse("./example/FullSpecif.xml")
+    xml_instance = XML("xml", tree)
+    # print("XML Type:", xml_instance.type)
+    # print("XML Content:", xml_instance.content)
+
+    xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
+    
+    root = xml_instance.content.getroot()
+    r = root.xpath("./Data")
+    # elements = xml_instance.content.find(xpath_expression)
+    elements = root.xpath(xpath_expression)
+    el = elements
+    el[0].text = "toto"
+    print(el[0].text)
+    print(elements[0].text)
+    # for element in elements:
+    #     print("1")
+    iterate_xml_elements(r)
+   
+    

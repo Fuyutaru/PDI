@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Root>
+   <Type>"MMVII_Serialization"</Type>
+   <Version>"0.0.0"</Version>
+   <Data>
+      <SetMesIm>
+         <NameIm>std::string</NameIm>
+         <Measures>
+            <el>
+               <Name>std::string</Name>
+               <Pt>double double</Pt>
+               <Sigma2>double double double</Sigma2>
+            </el>
+         </Measures>
+      </SetMesIm>
+   </Data>
+</Root>
