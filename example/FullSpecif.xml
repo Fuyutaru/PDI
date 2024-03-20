@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Root>
+   <Type>"MMVII_Serialization"</Type>
+   <Version>"0.0.0"</Version>
+   <Data>
+      <FullSpecifTarget>
+         <BitEncoding>
+            <Specifs>
+               <Type>"enum_TypeCodedTarget"</Type>
+               <NbBits>size_t</NbBits>
+               <FreqCircEq>size_t</FreqCircEq>
+               <MinHammingD>size_t</MinHammingD>
+               <UseHammingCode>int</UseHammingCode>
+               <MaxRunL>int int</MaxRunL>
+               <Parity>size_t</Parity>
+               <MaxNb>size_t</MaxNb>
+               <Base4N>size_t</Base4N>
+               <Computed>
+                  <Prefix>std::string</Prefix>
+                  <NbDigit>size_t</NbDigit>
+                  <MaxNum>size_t</MaxNum>
+                  <MaxLowCode>size_t</MaxLowCode>
+                  <MaxCodeEqui>size_t</MaxCodeEqui>
+               </Computed>
+            </Specifs>
+            <Encoding>
+               <el>
+                  <NumCode>size_t size_t</NumCode>
+                  <Name>std::string</Name>
+               </el>
+            </Encoding>
+         </BitEncoding>
+         <GeometryCodedTarget>
+            <Type>"enum_TypeCodedTarget"</Type>
+            <NbBits>int</NbBits>
+            <CenterF>double double</CenterF>
+            <CornEl1>double double</CornEl1>
+            <CornEl2>double double</CornEl2>
+            <SzCCB>double</SzCCB>
+            <ThickN_WhiteInt>double</ThickN_WhiteInt>
+            <ThickN_Code>double</ThickN_Code>
+            <ThickN_WhiteExt>double</ThickN_WhiteExt>
+            <ThickN_BorderExt>double</ThickN_BorderExt>
+            <ThickN_Car>double</ThickN_Car>
+            <ChessBoardAngle>double</ChessBoardAngle>
+            <ModeFlight>int</ModeFlight>
+            <CBAtTop>int</CBAtTop>
+            <WithChessBoard>int</WithChessBoard>
+            <WhiteBackGround>int</WhiteBackGround>
+            <ZeroIsBackGround>int</ZeroIsBackGround>
+            <AntiClockWiseBit>int</AntiClockWiseBit>
+            <RayOrientTablet>double</RayOrientTablet>
+            <CenterOrientTablet>double double</CenterOrientTablet>
+            <RayCenterMiniTarget>double</RayCenterMiniTarget>
+         </GeometryCodedTarget>
+         <Centers>
+            <el>double double</el>
+         </Centers>
+      </FullSpecifTarget>
+   </Data>
+</Root>

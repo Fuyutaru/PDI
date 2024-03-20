@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Root>
+   <Type>"MMVII_Serialization"</Type>
+   <Version>"0.0.0"</Version>
+   <Data>
+      <SetGCP>
+         <NameSet>std::string</NameSet>
+         <Measures>
+            <el>
+               <Name>std::string</Name>
+               <Pt>double double double</Pt>
+               <Opt:Sigma2>double double double double double double</Opt:Sigma2>
+            </el>
+         </Measures>
+      </SetGCP>
+   </Data>
+</Root>
