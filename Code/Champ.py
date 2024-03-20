@@ -5,4 +5,4 @@ class Champ():
         self.nom = nom
         self.type = type
         self.balise = balise
-    
+    yfyf
