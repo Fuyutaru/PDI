@@ -11,14 +11,48 @@ from PyQt5.QtCore import QSize, Qt
 
 import sys
 
-class MainWindow(QMainWindow):
+class Window(QDialog):
     def __init__(self):
-        super().__init__()
+        super(Window, self).__init__()
 
-        self.setWindowTitle("Test")
+        self.setWindowTitle("Création formulaire avec un bouton")
         self.formGroupXML= QGroupBox("Fichiers XML")
+        self.bouton = QPushButton("OK")
+ 
+        # adding action when form is accepted
+        self.bouton.clicked.connect(self.createForm2)
+        
+        self.mainLayout = QVBoxLayout()
+ 
+        # adding form group box to the layout
+        self.mainLayout.addWidget(self.formGroupXML)
+ 
+        # adding button box to the layout
+        self.mainLayout.addWidget(self.bouton)
+ 
+        # setting lay out
+        self.setLayout(self.mainLayout)
+        layout = QFormLayout()
+ 
+        # adding rows
+        layout.addRow(QLabel("Créer le formulaire"), self.bouton)
+ 
+        # setting layout
+        self.formGroupXML.setLayout(layout)
+ 
+        
+        
+        
+        
+    def createForm2(self):
+        
+        self.bouton.setEnabled(False)
+           
         self.formGroupBox = QGroupBox("A remplir")
         
+        self.form1 = QLineEdit()
+        self.form2 = QLineEdit()
+        self.form3 = QLineEdit()
         
         
         donnee1 = QLabel("Donnée 1")
@@ -27,10 +61,7 @@ class MainWindow(QMainWindow):
         t1 = QLabel("(type 1)")
         t2 = QLabel("(type 2)")
         t3 = QLabel("(type 3)")
-        form1 = QLineEdit()
-        form2 = QLineEdit()
-        enum = QComboBox()
-        enum.addItems(["1", "2", "3", "4", "5"])
+        
         
         bouton = QPushButton(text="Enregistrer")
         
@@ -39,15 +70,15 @@ class MainWindow(QMainWindow):
         lh3 = QHBoxLayout()
         
         lh1.addWidget(donnee1)
-        lh1.addWidget(form1)
+        lh1.addWidget(self.form1)
         lh1.addWidget(t1)
-        
+            
         lh2.addWidget(donnee2)
-        lh2.addWidget(form2)
+        lh2.addWidget(self.form2)
         lh2.addWidget(t2)
-        
+    
         lh3.addWidget(donnee3)
-        lh3.addWidget(enum)
+        lh3.addWidget(self.form3)
         lh3.addWidget(t3)
         
         lfinal = QVBoxLayout()
@@ -56,14 +87,16 @@ class MainWindow(QMainWindow):
         lfinal.addLayout(lh2)
         lfinal.addLayout(lh3)
         
-        widget = QWidget()
-        widget.setLayout(lfinal)
-        self.setCentralWidget(widget)
+        self.formGroupBox.setLayout(lfinal)
+        self.mainLayout.addWidget(self.formGroupBox)
+ 
+        # setting lay out
+        self.setLayout(self.mainLayout)
         
 
 app = QApplication(sys.argv)
 
-window = MainWindow()
+window = Window()
 window.show()
 
 app.exec()
