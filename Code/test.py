@@ -10,7 +10,7 @@ def iterate_xml_elements(root, path=[]):
         else:
             print(f"Leaf Node: {'/'.join(current_path)} - Text: {element.text}")
 
-test bug = ;
+
 if __name__ == "__main__":
     # Test your XML class
     tree = etree.parse("./example/FullSpecif.xml")
