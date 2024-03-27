@@ -11,3 +11,6 @@ class Tableau():
     def __init__(self, champs):
         self.champs = champs
         self.addButton = QPushButton()
+        
+    def addLine():
+        pass
