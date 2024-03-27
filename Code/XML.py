@@ -1,17 +1,17 @@
 import lxml.etree as etree
 from Data import Data  
+from Strategy import Strategy
 
-class XML(Data):
+class XML(Data, Strategy):
     
-    def __init__(self, type, content):
+    def __init__(self, type):
         super().__init__()  # appel du constructeur de la classe parente
         # initialisation d'autres attributs spécifiques à la classe XML
         self.type = type
-        self.content = content
+        self.content = None
         
-        
-    # le champ va juste aller chercher le data et l'afficher mais en soit, quand on écrit dans le champ ca ne le
-    # change pas en temps réel mais qu'une fois qu'on le sauvegarde.
+    def readFile(self, xmlStrat):
+        self.content = xmlStrat.readFile()
     
     # def readfile(self, file_path):
     #     with open(file_path, 'rb') as f:

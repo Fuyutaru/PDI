@@ -8,18 +8,14 @@ class Strategy(ABC):
     def readFile(self):
         pass
     
-    @abstractmethod
-    def modif(self):
-        pass
+    # @abstractmethod
+    # def convert2Xml(self):
+    #     pass
     
-    @abstractmethod
-    def convert2Xml(self):
-        pass
+    # @abstractmethod
+    # def verif(self):
+    #     pass
     
-    @abstractmethod
-    def verif(self):
-        pass
-    
-    @abstractmethod
-    def comparer(self):
-        pass
+    # @abstractmethod
+    # def comparer(self):
+    #     pass
