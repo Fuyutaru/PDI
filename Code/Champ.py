@@ -1,19 +1,15 @@
-
-
 class Champ():
     def __init__(self, nom, type, balise):
         self.nom = nom
         self.type = type
         self.balise = balise
-        self.valeur = None
+        self._valeur = None
     
     @property
     def valeur(self):
-        return self.valeur
+        return self._valeur
     
-    # on peut juste faire champ_instance.valeur = "example_value"
-
     @valeur.setter
     def valeur(self, new_value):
-        self.valeur = new_value
-    
+        if new_value != self._valeur:
+            self._valeur = new_value

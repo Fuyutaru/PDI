@@ -1,12 +1,18 @@
 from XML import XML
 from lxml import etree
 from Champ import Champ
+from XmlManager import XmlManager
 
-def iterate_xml_elements(root, path=[], champs=[]):
+def iterate_xml_elements(root, champs, path=None):
+    if path is None:
+        path = []
+        
+    print(f"Called with path: {path}")
+    
     for element in root:
         current_path = path + [element.tag]
         if len(element) > 0:
-            iterate_xml_elements(element, current_path, champs)
+            iterate_xml_elements(element, champs, current_path)
         else:
             nom = element.tag
             type = element.text
@@ -15,28 +21,22 @@ def iterate_xml_elements(root, path=[], champs=[]):
             champs.append(Champ(nom, type, balise))
 
 
+
 if __name__ == "__main__":
     # Test your XML class
-    tree = etree.parse("./example/FullSpecif.xml")
-    xml_instance = XML("xml", tree)
-    # print("XML Type:", xml_instance.type)
-    # print("XML Content:", xml_instance.content)
-
+    xmlStrat = XmlManager("./example/FullSpecif.xml")
+    xml = XML("specification")
+    xml.readFile(xmlStrat)
     xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
-    
-    root = xml_instance.content.getroot()
+    root = xml.content.getroot()
     r = root.xpath("./Data")
-    # elements = xml_instance.content.find(xpath_expression)
-    elements = root.xpath(xpath_expression)
-    el = elements
+    el = root.xpath(xpath_expression)
     el[0].text = "toto"
-    print(el[0].text)
-    print(elements[0].text)
     # for element in elements:
     #     print("1")
     
     champs = []
-    iterate_xml_elements(r, champs= champs)
+    iterate_xml_elements(r, champs)
     for el in champs:
         print(el.nom, el.type, el.balise)
     # print(champs)
