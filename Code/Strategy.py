@@ -13,7 +13,7 @@ class Strategy(ABC):
         pass
     
     @abstractmethod
-    def convert(self):
+    def convert2Xml(self):
         pass
     
     @abstractmethod
