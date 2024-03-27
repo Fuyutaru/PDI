@@ -24,22 +24,23 @@ def iterate_xml_elements(root, champs, path=None):
 
 if __name__ == "__main__":
     # Test your XML class
-    xmlStrat = XmlManager("example/FullSpecif.xml")
-    xml = XML("specification", xmlStrat)
+    xmlStrat = XmlManager()
+    xml = XML("specification", xmlStrat,"example/FullSpecif.xml")
     xml.readFile()
-    xml.convert2Xml()
-    xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
-    root = xml.content.getroot()
-    r = root.xpath("./Data")
-    el = root.xpath(xpath_expression)
-    el[0].text = "toto"
-    # for element in elements:
-    #     print("1")
+    data_xml = xml.createData()
+    data_xml.convert2Xml()
+    # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
+    # root = xml.content.getroot()
+    # r = root.xpath("./Data")
+    # el = root.xpath(xpath_expression)
+    # el[0].text = "toto"
+    # # for element in elements:
+    # #     print("1")
     
-    champs = []
-    iterate_xml_elements(r, champs)
-    for el in champs:
-        print(el.nom, el.type, el.balise)
-    # print(champs)
+    # champs = []
+    # iterate_xml_elements(r, champs)
+    # for el in champs:
+    #     print(el.nom, el.type, el.balise)
+    # # print(champs)
    
     
