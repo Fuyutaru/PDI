@@ -1,14 +1,18 @@
 from XML import XML
 from lxml import etree
+from Champ import Champ
 
-def iterate_xml_elements(root, path=[]):
+def iterate_xml_elements(root, path=[], champs=[]):
     for element in root:
         current_path = path + [element.tag]
-        print(f"Current Path: {'/'.join(current_path)}")
         if len(element) > 0:
-            iterate_xml_elements(element, current_path)
+            iterate_xml_elements(element, current_path, champs)
         else:
-            print(f"Leaf Node: {'/'.join(current_path)} - Text: {element.text}")
+            nom = element.tag
+            type = element.text
+            balise = '/'.join(current_path)
+            print(f"Leaf Node: {balise} - Type: {type}")
+            champs.append(Champ(nom, type, balise))
 
 
 if __name__ == "__main__":
@@ -30,6 +34,11 @@ if __name__ == "__main__":
     print(elements[0].text)
     # for element in elements:
     #     print("1")
-    iterate_xml_elements(r)
+    
+    champs = []
+    iterate_xml_elements(r, champs= champs)
+    for el in champs:
+        print(el.nom, el.type, el.balise)
+    # print(champs)
    
     
