@@ -39,8 +39,9 @@ class GUI(QMainWindow):
         loadSpecAction.triggered.connect(self.loadSpecificationXml)
         fileMenu.addAction(loadSpecAction)
 
-        loadDataAction = QAction(QIcon('./icone.png'),'Charger Données XML', self)
-        loadDataAction.triggered.connect(QIcon('./icone.png'),self.loadDataXml)
+        loadDataAction = QAction(QIcon('./icone.png'), 'Charger Données XML', self)
+        loadDataAction.triggered.connect(self.loadDataXml)
+
         fileMenu.addAction(loadDataAction)
 
         saveDataAction = QAction('Enregistrer Données XML', self)
@@ -234,11 +235,11 @@ class GUI(QMainWindow):
         
         
 
-app = QApplication(sys.argv)
-champs = [Champ.Champ("nom", "type", "balise"), Champ.Champ("nom2", "type2", "balise2")]
-gui = GUI(champs) 
-gui.show()
-sys.exit(app.exec_())
+# app = QApplication(sys.argv)
+# champs = [Champ.Champ("nom", "type", "balise"), Champ.Champ("nom2", "type2", "balise2")]
+# gui = GUI(champs) 
+# gui.show()
+# sys.exit(app.exec_())
 
         
         
