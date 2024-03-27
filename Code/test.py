@@ -1,6 +1,7 @@
 from XML import XML
 from lxml import etree
 from Champ import Champ
+import os
 
 def iterate_xml_elements(root, path=[], champs=[]):
     for element in root:
@@ -16,8 +17,11 @@ def iterate_xml_elements(root, path=[], champs=[]):
 
 
 if __name__ == "__main__":
+    dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    xml_file_path = os.path.join(dir_path, 'example', 'FullSpecif.xml')
+    
     # Test your XML class
-    tree = etree.parse("./example/FullSpecif.xml")
+    tree = etree.parse(xml_file_path)
     xml_instance = XML("xml", tree)
     # print("XML Type:", xml_instance.type)
     # print("XML Content:", xml_instance.content)
