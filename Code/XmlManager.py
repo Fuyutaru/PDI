@@ -4,16 +4,15 @@ import re
 
 class XmlManager(Strategy):
     
-    def __init__(self, filename):
-        self.filename = filename
-        self.tree = None
+    def __init__(self):
+        pass
     
-    def readFile(self):
-        self.tree = etree.parse(self.filename)
-        return self.tree
+    def readFile(self, filename):
+        tree = etree.parse(filename)
+        return tree
     
-    def verif(self):
-        root = self.tree.getroot()
+    def verif(self, tree):
+        root = tree.getroot()
         version_elem = root.find('Version')
         data_elem = root.find('Data')
         type_elem = root.find('Type')
@@ -33,4 +32,28 @@ class XmlManager(Strategy):
             return False
         
         # All verifications passed
+        return True
+    
+    def comparer(self, data):
+        spec_tree = self.tree
+
+        # Compare versions
+        spec_version = spec_tree.find('Version').text.strip()
+        data_version = data.find('Version').text.strip()
+        if spec_version != data_version:
+            return False
+        
+        # Compare tag structure and order
+        spec_tags = [elem.tag for elem in spec_tree.iter()]
+        data_tags = [elem.tag for elem in data.iter()]
+        if spec_tags != data_tags:
+            return False
+        
+        # Compare data type
+        spec_type = spec_tree.find('Data/FullSpecifTarget/BitEncoding/Specifs/Type').text.strip()
+        data_type = data.find('Data/FullSpecifTarget/BitEncoding/Specifs/Type').text.strip()
+        if spec_type != data_type:
+            return False
+        
+        # All comparisons passed
         return True
