@@ -40,7 +40,7 @@ class GUI(QMainWindow):
         fileMenu.addAction(loadSpecAction)
 
         loadDataAction = QAction(QIcon('./icone.png'),'Charger Données XML', self)
-        loadDataAction.triggered.connect(self.loadDataXml)
+        loadDataAction.triggered.connect(QIcon('./icone.png'),self.loadDataXml)
         fileMenu.addAction(loadDataAction)
 
         saveDataAction = QAction('Enregistrer Données XML', self)
@@ -110,7 +110,7 @@ class GUI(QMainWindow):
     
 
     def analyzeSpecification(self, xml_tree):
-        """analyse la strucutre du fichier et stock les infos dans un dico"""
+        """j'analyse la strucutre du fichier et stock les infos dans un dico"""
         specification = {}
         
         # Parcourons l'arbre XML et collectons les informations
