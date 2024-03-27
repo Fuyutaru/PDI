@@ -12,9 +12,9 @@ class Strategy(ABC):
     # def convert2Xml(self):
     #     pass
     
-    # @abstractmethod
-    # def verif(self):
-    #     pass
+    @abstractmethod
+    def verif(self):
+        pass
     
     # @abstractmethod
     # def comparer(self):
