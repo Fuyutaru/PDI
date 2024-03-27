@@ -11,8 +11,17 @@ from PyQt5.QtCore import QSize, Qt
 
 import Champ
 
-class GUI(QDialogn, QMainWindow):
+class GUI(QDialog, QMainWindow):
     def __init__(self, champs):
         self.champs = champs
         self.saveButton = QPushButton()
         self.addChampButton = QPushButton()
+        
+    def save():
+        pass
+    
+    def ajouterChamp():
+        pass
+    
+    def ajouterTab():
+        pass
