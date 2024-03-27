@@ -25,8 +25,9 @@ def iterate_xml_elements(root, champs, path=None):
 if __name__ == "__main__":
     # Test your XML class
     xmlStrat = XmlManager("example/FullSpecif.xml")
-    xml = XML("specification")
-    xml.readFile(xmlStrat)
+    xml = XML("specification", xmlStrat)
+    xml.readFile()
+    xml.convert2Xml()
     xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     root = xml.content.getroot()
     r = root.xpath("./Data")

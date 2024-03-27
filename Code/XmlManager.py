@@ -11,3 +11,6 @@ class XmlManager(Strategy):
         self.tree = etree.parse(self.filename)
         return self.tree
     
+    def convert2Xml(self):
+        self.tree.write(self.filename,encoding="utf-8", xml_declaration=True)
+    
