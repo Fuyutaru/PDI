@@ -13,6 +13,7 @@ import Champ
 
 class GUI(QDialog, QMainWindow):
     def __init__(self, champs):
+        super(GUI, self).__init__()
         self.champs = champs
         self.saveButton = QPushButton()
         
