@@ -16,11 +16,28 @@ class GUI(QDialog, QMainWindow):
         super(GUI, self).__init__()
         self.champs = champs
         self.saveButton = QPushButton()
+        self.mainLayout = QVBoxLayout()
+        
+        #TEST D'AJOUT DES CHAMPS
+        self.bouton = QPushButton("Ajouter champs")
+        self.bouton.clicked.connect(self.ajouterChamps)
+        self.mainLayout.addWidget(self.bouton)
+        self.setLayout(self.mainLayout)
         
     def save():
         pass
     
-    def ajouterChamp():
+    def ajouterChamps(self):
+        for champ in self.champs :
+            champLayout = QHBoxLayout()
+            nom = QLabel(champ.nom)
+            champLayout.addWidget(nom)
+            champLayout.addWidget(QLineEdit())
+            typeChamp = QLabel("(" + champ.type + ")")
+            champLayout.addWidget(typeChamp)
+            self.mainLayout.addLayout(champLayout)
+            
+            self.setLayout(self.mainLayout)
         pass
     
     def ajouterTab():
