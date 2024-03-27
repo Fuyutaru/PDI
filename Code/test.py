@@ -38,7 +38,7 @@ if __name__ == "__main__":
     champs = []
     iterate_xml_elements(r, champs)
     for el in champs:
-        print(el.nom, el.type, el.balise)
+        print(el.nom, el.type, el.balise, el._valeur)
     # print(champs)
    
     
