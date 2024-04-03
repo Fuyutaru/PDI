@@ -2,13 +2,12 @@
 """
 Created on Wed Mar 27 10:03:51 2024
 
-@author: Svetie
 """
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QSize, Qt
 
-
+from Tableau import Tableau
 import Champ
 
 class GUI(QDialog, QMainWindow):
@@ -28,17 +27,58 @@ class GUI(QDialog, QMainWindow):
         pass
     
     def ajouterChamps(self):
-        for champ in self.champs :
-            champLayout = QHBoxLayout()
-            nom = QLabel(champ.nom)
-            champLayout.addWidget(nom)
-            champLayout.addWidget(QLineEdit())
-            typeChamp = QLabel("(" + champ.type + ")")
-            champLayout.addWidget(typeChamp)
-            self.mainLayout.addLayout(champLayout)
-            
-            self.setLayout(self.mainLayout)
-        pass
+        listeChampTableau = []
+        n = len(self.champs)
+        for i in range(n):
+            if self.champs[i].balise == "el" :
+                if i == n-1 or (i < n-1 and self.champs[i+1].balise != "el"):
+                    listeChampTableau.append(self.champs[i])
+                    self.ajouterTab(listeChampTableau)
+                    listeChampTableau = []
+                else :
+                    listeChampTableau.append(self.champs[i])
+            else :
+                champLayout = QHBoxLayout()
+                nom = QLabel(self.champs[i].nom)
+                champLayout.addWidget(nom)
+                champLayout.addWidget(QLineEdit())
+                typeChamp = QLabel("(" + self.champs[i].type + ")")
+                champLayout.addWidget(typeChamp)
+                self.mainLayout.addLayout(champLayout)
+                
+        self.setLayout(self.mainLayout)
+        
+        
     
-    def ajouterTab():
-        pass
+    def ajouterTab(self, listeChampTableau):
+        
+            
+        def addLine():
+            rowPosition = tableau.rowCount()
+            tableau.insertRow(rowPosition)
+            
+        
+        addButton = QPushButton("+")
+        addButton.clicked.connect(addLine)
+
+        
+        tableau = QTableWidget()
+        
+        n = len(listeChampTableau)
+        tableau.setRowCount(1)
+        tableau.setColumnCount(n)
+        columns = []
+        for i in range(n) :
+            columns.append(listeChampTableau[i].nom)
+        tableau.setHorizontalHeaderLabels(columns)
+        
+        tableau.move(0, 0)
+        
+        tabLayout = QHBoxLayout()
+        tabLayout.addWidget(tableau)
+        tabLayout.addWidget(addButton)
+        self.mainLayout.addLayout(tabLayout)
+
+
+
+
