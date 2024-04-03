@@ -1,6 +1,8 @@
 import lxml.etree as etree
 from Data import Data  
 from Strategy import Strategy
+import copy
+
 
 class XML(Data, Strategy):
     
@@ -20,7 +22,8 @@ class XML(Data, Strategy):
         self.strat.convert2Xml(self.content,self.filename)
         
     def createData(self) :
-        data_tree = self.strat.createData(self.content)
+        data_tree = copy.deepcopy(self.content)
+        self.strat.createData(data_tree.getroot(), 0)
         data_filename = self.filename[:-4] + "_data.xml"
         data_XML = XML("data",self.strat,data_filename)
         data_XML.content = data_tree
