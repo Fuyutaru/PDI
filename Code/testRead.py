@@ -8,8 +8,8 @@ if __name__ == "__main__":
     current_directory = os.path.dirname(os.path.realpath(__file__))
     rpath = "example/FullSpecif.xml"
     path = os.path.join(current_directory, rpath)
-    xmlStrat = XmlManager(path)
-    xml = XML("specification", xmlStrat)
+    xmlStrat = XmlManager()
+    xml = XML("specification", xmlStrat, path)
     xml.readFile()
     xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     root = xml.content.getroot()
@@ -19,4 +19,7 @@ if __name__ == "__main__":
     print(el[0].text)
     
     print(xml.verif())
+    
+    spe = xmlStrat.comparer(xml.content,el)
+    print(spe)
     

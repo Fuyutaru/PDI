@@ -6,6 +6,7 @@
       <FullSpecifTarget>
          <BitEncoding>
             <Specifs>
+               <hihi>bool</hihi>
                <Type>"enum_TypeCodedTarget"</Type>
                <NbBits>size_t</NbBits>
                <FreqCircEq>size_t</FreqCircEq>

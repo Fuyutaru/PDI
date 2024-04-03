@@ -1,8 +1,8 @@
 import lxml.etree as etree
 from Data import Data  
-from Strategy import Strategy
 
-class XML(Data, Strategy):
+
+class XML(Data):
     
     def __init__(self, type, strat, filename):
         super().__init__()  # appel du constructeur de la classe parente
@@ -17,4 +17,6 @@ class XML(Data, Strategy):
     
     def verif(self):
         return self.strat.verif(self.content)
+    def comparer(self):
+        pass
 
