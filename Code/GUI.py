@@ -7,7 +7,6 @@ Created on Wed Mar 27 10:03:51 2024
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QSize, Qt
 
-from Tableau import Tableau
 import Champ
 
 class GUI(QDialog, QMainWindow):
