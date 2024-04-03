@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 class Strategy(ABC):
+    @abstractmethod
     def __init__(self):
         pass
     
@@ -9,11 +10,7 @@ class Strategy(ABC):
         pass
     
     @abstractmethod
-    def convert2Xml(self):
-        pass
-    
-    @abstractmethod
-    def createData(self):
+    def convert2File(self,tree,filename):
         pass
     
     # @abstractmethod

@@ -1,4 +1,4 @@
-from XML import XML
+from XML import XMLFiles
 from lxml import etree
 from Champ import Champ
 from XmlManager import XmlManager
@@ -21,14 +21,15 @@ def iterate_xml_elements(root, champs, path=None):
             champs.append(Champ(nom, type, balise))
 
 
-
 if __name__ == "__main__":
+    
     # Test your XML class
     xmlStrat = XmlManager()
     xml = XML("specification", xmlStrat,"example/FullSpecif.xml")
     xml.readFile()
     data_xml = xml.createData()
     data_xml.convert2Xml()
+    
     # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     # root = xml.content.getroot()
     # r = root.xpath("./Data")
@@ -42,5 +43,6 @@ if __name__ == "__main__":
     # for el in champs:
     #     print(el.nom, el.type, el.balise)
     # # print(champs)
+
    
     

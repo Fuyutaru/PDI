@@ -1,10 +1,9 @@
-import lxml.etree as etree
 from Data import Data  
 from Strategy import Strategy
 import copy
 
 
-class XML(Data, Strategy):
+class XMLFiles (Data):
     
     def __init__(self, type, strat,filename):
         super().__init__()  # appel du constructeur de la classe parente
@@ -18,20 +17,22 @@ class XML(Data, Strategy):
     def readFile(self):
         self.content = self.strat.readFile(self.filename)
         
-    def convert2Xml(self):
-        self.strat.convert2Xml(self.content,self.filename)
+    def convert2File(self):
+        self.strat.convert2File(self.content,self.filename)
         
     def createData(self) :
+        
         data_tree = copy.deepcopy(self.content)
-        self.strat.createData(data_tree.getroot(), 0)
+        root_data_element = data_tree.find('Data')
+        if root_data_element is not None:
+            for element in root_data_element.iter():
+                element.text = ''
+        else :
+            print("Error: Root not find")
+            
         data_filename = self.filename[:-4] + "_data.xml"
-        data_XML = XML("data",self.strat,data_filename)
+        data_XML = XMLFiles("data",self.strat,data_filename)
         data_XML.content = data_tree
         return data_XML
         
-        
-    # def readfile(self, file_path):
-    #     with open(file_path, 'rb') as f:
-    #         self.content = etree.parse(f)
-    #     self.type = "XML"
 
