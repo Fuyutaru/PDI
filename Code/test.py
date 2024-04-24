@@ -1,6 +1,6 @@
-from XML import DataType
+from DataType import DataType
 from lxml import etree
-from Champ import Champ
+from Field import Field
 from XmlManager import XmlManager
 
 def iterate_xml_elements(root, champs, path=None):
@@ -14,20 +14,15 @@ def iterate_xml_elements(root, champs, path=None):
         if len(element) > 0:
             iterate_xml_elements(element, champs, current_path)
         else:
-            nom = element.tag
+            name = element.tag
             type = element.text
-            balise = '/'.join(current_path)
-            print(f"Leaf Node: {balise} - Type: {type}")
-            champs.append(Champ(nom, type, balise))
+            root = '/'.join(current_path)
+            print(f"Leaf Node: {root} - Type: {type}")
+            champs.append(Field(name, type, root,0))
 
 
 if __name__ == "__main__":
     
-    champs = []
-    iterate_xml_elements(r, champs)
-    for el in champs:
-        print(el.nom, el.type, el.balise, el._valeur)
-    # print(champs)
     
     # Test your XML class
     xmlStrat = XmlManager()
@@ -35,6 +30,10 @@ if __name__ == "__main__":
     xml.readFile()
     data_xml = xml.createData()
     data_xml.convert2File()
+    
+    field_list = xml.convert2Field()
+    for i in range (5) :
+        print(field_list[i].name)
     
     # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     # root = xml.content.getroot()

@@ -14,6 +14,10 @@ class Strategy(ABC):
         pass
     
     @abstractmethod
+    def convert2Field(self, tree):
+        pass
+    
+    @abstractmethod
     def verif(self):
         pass
     

@@ -1,9 +1,9 @@
-class Champ():
-    def __init__(self, nom, type, balise):
-        self.nom = nom
+class Field():
+    def __init__(self, name, type, root, value):
+        self.name = name
         self.type = type
-        self.balise = balise
-        self._valeur = None
+        self.root = root
+        self._value = value
     
     @property
     def valeur(self):

@@ -1,8 +1,3 @@
-from Data import Data  
-from Strategy import Strategy
-import copy
-
-
 class DataType ():
     
     def __init__(self, type, strat,filename):
@@ -20,19 +15,10 @@ class DataType ():
     def convert2File(self):
         self.strat.convert2File(self.content,self.filename)
         
-    def createData(self) :
+    def convert2Field(self) :
+        return self.strat.convert2Field(self.content)
         
-        data_tree = copy.deepcopy(self.content)
-        root_data_element = data_tree.find('Data')
-        if root_data_element is not None:
-            for element in root_data_element.iter():
-                element.text = ''
-        else :
-            print("Error: Root not find")
-            
-        data_filename = self.filename[:-4] + "_data.xml"
-        data_XML = DataType("data",self.strat,data_filename)
-        data_XML.content = data_tree
-        return data_XML
+    def createData(self) :
+        return self.strat.createData(self.content, self.filename)
         
 
