@@ -1,4 +1,4 @@
-from XML import XML
+from Datatype import Datatype
 from lxml import etree
 from Champ import Champ
 from XmlManager import XmlManager
@@ -9,17 +9,17 @@ if __name__ == "__main__":
     rpath = "example/FullSpecif.xml"
     path = os.path.join(current_directory, rpath)
     xmlStrat = XmlManager()
-    xml = XML("specification", xmlStrat, path)
-    xml.readFile()
+    specif = Datatype("specification", xmlStrat, path)
+    specif.readFile()
     xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
-    root = xml.content.getroot()
+    root = specif.content.getroot()
     r = root.xpath("./Data")
     el = root.xpath(xpath_expression)
     el[0].text = "toto"
     print(el[0].text)
     
-    print(xml.verif())
+    print(specif.verif())
     
-    spe = xmlStrat.comparer(xml.content,el)
+    spe = xmlStrat.comparer(specif.content,el)
     print(spe)
     

@@ -7,6 +7,7 @@ class Dico:
                "std::string": str,
                "double": float,
                "float": float,
-               "bool": bool
+               "bool": bool,
+               "enum_TypeCodedTarget": enumerate
                }
     

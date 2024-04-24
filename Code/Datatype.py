@@ -1,13 +1,11 @@
-import lxml.etree as etree
-from Data import Data  
+# import lxml.etree as etree
+# from Data import Data  
 
 
-class XML(Data):
+class Datatype():
     
     def __init__(self, type, strat, filename):
-        super().__init__()  # appel du constructeur de la classe parente
-        # initialisation d'autres attributs spécifiques à la classe XML
-        self.type = type
+        # super().__init__()  
         self.content = None
         self.strat = strat
         self.filename = filename
@@ -17,6 +15,7 @@ class XML(Data):
     
     def verif(self):
         return self.strat.verif(self.content)
+    
     def comparer(self):
         pass
 

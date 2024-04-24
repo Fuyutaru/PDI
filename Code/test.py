@@ -1,4 +1,4 @@
-from XML import XML
+from Code.Datatype import XML
 from lxml import etree
 from Champ import Champ
 from XmlManager import XmlManager
