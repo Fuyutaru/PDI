@@ -1,9 +1,13 @@
-import abc
-import lxml.etree as etree
+from abc import ABC, abstractmethod
 
-class Data(abc.ABC):
+class Data(ABC):
+    
+    @abstractmethod
     def __init__(self):
         pass
-        
-    # le content peut être initialiser dans le main en lisant le  fichier
-    # avec content = etree.parse("data.xml") par exemple
+    
+    @abstractmethod
+    def readFile(self):
+        pass
+  
+    

@@ -1,4 +1,4 @@
-from XML import XML
+from XML import DataType
 from lxml import etree
 from Champ import Champ
 from XmlManager import XmlManager
@@ -21,24 +21,34 @@ def iterate_xml_elements(root, champs, path=None):
             champs.append(Champ(nom, type, balise))
 
 
-
 if __name__ == "__main__":
-    # Test your XML class
-    xmlStrat = XmlManager("./example/FullSpecif.xml")
-    xml = XML("specification")
-    xml.readFile(xmlStrat)
-    xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
-    root = xml.content.getroot()
-    r = root.xpath("./Data")
-    el = root.xpath(xpath_expression)
-    el[0].text = "toto"
-    # for element in elements:
-    #     print("1")
     
     champs = []
     iterate_xml_elements(r, champs)
     for el in champs:
         print(el.nom, el.type, el.balise, el._valeur)
     # print(champs)
+    
+    # Test your XML class
+    xmlStrat = XmlManager()
+    xml = DataType("specification", xmlStrat,"example/FullSpecif.xml")
+    xml.readFile()
+    data_xml = xml.createData()
+    data_xml.convert2File()
+    
+    # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
+    # root = xml.content.getroot()
+    # r = root.xpath("./Data")
+    # el = root.xpath(xpath_expression)
+    # el[0].text = "toto"
+    # # for element in elements:
+    # #     print("1")
+    
+    # champs = []
+    # iterate_xml_elements(r, champs)
+    # for el in champs:
+    #     print(el.nom, el.type, el.balise)
+    # # print(champs)
+
    
     

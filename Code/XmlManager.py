@@ -4,13 +4,12 @@ import re
 
 class XmlManager(Strategy):
     
-    def __init__(self, filename):
-        self.filename = filename
-        self.tree = None
+    def __init__(self):
+        pass
     
-    def readFile(self):
-        self.tree = etree.parse(self.filename)
-        return self.tree
+    def readFile(self,filename):
+        tree = etree.parse(filename)
+        return tree
     
     def verif(self):
         root = self.tree.getroot()
@@ -34,3 +33,7 @@ class XmlManager(Strategy):
         
         # All verifications passed
         return True
+    
+    def convert2File(self, tree, filename):
+        tree.write(filename, encoding="utf-8", xml_declaration=True, method="xml")
+    
