@@ -7,6 +7,7 @@ Created on Wed Mar 27 10:03:51 2024
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QSize, Qt
 
+import Enumeration
 import Champ
 
 class GUI(QDialog, QMainWindow):
@@ -36,6 +37,17 @@ class GUI(QDialog, QMainWindow):
                     listeChampTableau = []
                 else :
                     listeChampTableau.append(self.champs[i])
+            elif self.champs[i].type in Enumeration.enumDict :
+                enumComboBox = QComboBox()
+                enumComboBox.addItems(Enumeration.enumDict[self.champs[i].type])
+                
+                enumLayout = QHBoxLayout()
+                nom = QLabel(self.champs[i].nom)
+                enumLayout.addWidget(nom)
+                enumLayout.addWidget(enumComboBox)
+                typeEnum = QLabel("(" + self.champs[i].type + ")")
+                enumLayout.addWidget(typeEnum)
+                self.mainLayout.addLayout(enumLayout)
             else :
                 champLayout = QHBoxLayout()
                 nom = QLabel(self.champs[i].nom)

@@ -17,7 +17,8 @@ champ3 = Champ("Name", "string", 3)
 champ4 = Champ("Number", "int", "el")
 champ5 = Champ("Id", "int", "el")
 champ6 = Champ("Name", "string", "el")
-champs= [champ1, champ2, champ4, champ5, champ6, champ3, champ4, champ5]
+champ7 = Champ("Systeme de coordonnées", "enum_SysCoGeo", 4)
+champs= [champ1, champ2, champ4, champ5, champ6, champ3, champ7, champ4, champ5]
 
 window = GUI(champs)
 window.show()
