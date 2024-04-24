@@ -10,6 +10,6 @@ class XmlManager(Strategy):
         tree = etree.parse(filename)
         return tree
     
-    def convert2fFile(self, tree, filename):
+    def convert2File(self, tree, filename):
         tree.write(filename, encoding="utf-8", xml_declaration=True, method="xml")
     

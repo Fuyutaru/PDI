@@ -3,7 +3,7 @@ from Strategy import Strategy
 import copy
 
 
-class XMLFiles (Data):
+class DataType ():
     
     def __init__(self, type, strat,filename):
         super().__init__()  # appel du constructeur de la classe parente
@@ -31,7 +31,7 @@ class XMLFiles (Data):
             print("Error: Root not find")
             
         data_filename = self.filename[:-4] + "_data.xml"
-        data_XML = XMLFiles("data",self.strat,data_filename)
+        data_XML = DataType("data",self.strat,data_filename)
         data_XML.content = data_tree
         return data_XML
         

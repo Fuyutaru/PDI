@@ -1,4 +1,4 @@
-from XML import XMLFiles
+from XML import DataType
 from lxml import etree
 from Champ import Champ
 from XmlManager import XmlManager
@@ -25,10 +25,10 @@ if __name__ == "__main__":
     
     # Test your XML class
     xmlStrat = XmlManager()
-    xml = XML("specification", xmlStrat,"example/FullSpecif.xml")
+    xml = DataType("specification", xmlStrat,"example/FullSpecif.xml")
     xml.readFile()
     data_xml = xml.createData()
-    data_xml.convert2Xml()
+    data_xml.convert2File()
     
     # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     # root = xml.content.getroot()
