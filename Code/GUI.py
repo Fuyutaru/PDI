@@ -21,7 +21,10 @@ class GUI(QDialog, QMainWindow):
         self.bouton = QPushButton("Ajouter champs")
         self.bouton.clicked.connect(self.ajouterChamps)
         self.mainLayout.addWidget(self.bouton)
+        
         self.setLayout(self.mainLayout)
+        
+        
         
     def save():
         pass
