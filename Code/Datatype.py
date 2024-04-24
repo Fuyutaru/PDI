@@ -4,7 +4,7 @@
 
 class Datatype():
     
-    def __init__(self, type, strat, filename):
+    def __init__(self, strat, filename):
         # super().__init__()  
         self.content = None
         self.strat = strat

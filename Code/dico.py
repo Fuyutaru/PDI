@@ -1,3 +1,5 @@
+import Enumeration
+
 class Dico:
     content = {'size_t': int,
                "int": int,
@@ -8,6 +10,6 @@ class Dico:
                "double": float,
                "float": float,
                "bool": bool,
-               "enum_TypeCodedTarget": enumerate
+               '"enum_TypeCodedTarget"': Enumeration.enumDict
                }
     
