@@ -115,6 +115,8 @@ class XmlEditorGUI(QMainWindow):
         else:
             QMessageBox.warning(self, 'Erreur', 'Le fichier de données XML contient des erreurs.')
 
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     gui = XmlEditorGUI()
