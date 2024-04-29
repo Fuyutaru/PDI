@@ -27,6 +27,7 @@ class GUIM(QDialog, QMainWindow):
         self.bouton.clicked.connect(self.ajouterChamps)
         self.mainLayout.addWidget(self.boutonAjouter, alignment=Qt.AlignLeft)
         
+         
         # Ajout tableau pour afficher les données
         self.tableau = QTableWidget()
         self.mainLayout.addWidget(self.tableau)
