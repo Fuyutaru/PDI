@@ -104,7 +104,7 @@
             <WithChessBoard>0</WithChessBoard>
             <WhiteBackGround>0</WhiteBackGround>
             <ZeroIsBackGround>1</ZeroIsBackGround>
-            <AntiClockWiseBit,>0</AntiClockWiseBit,>
+            <AntiClockWiseBit>0</AntiClockWiseBit>
             <RayOrientTablet>-1</RayOrientTablet>
             <CenterOrientTablet>0 0</CenterOrientTablet>
             <RayCenterMiniTarget>-1</RayCenterMiniTarget>

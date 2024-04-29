@@ -1,8 +1,8 @@
 class Field():
-    def __init__(self, name, type, root, value):
+    def __init__(self, name, type, path, value):
         self.name = name
         self.type = type
-        self.root = root
+        self.path = path
         self._value = value
     
     @property
