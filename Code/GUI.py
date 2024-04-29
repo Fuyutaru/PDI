@@ -165,7 +165,6 @@ class GUI(QMainWindow):
  
 
                 
-                
     def loadDataXml(self):
         """charge un fichier de données xml, son affichage va dans un QTextEdit"""
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
