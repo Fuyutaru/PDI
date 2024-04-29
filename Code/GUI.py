@@ -23,9 +23,7 @@ class GUI(QDialog, QMainWindow):
         self.mainLayout.addWidget(self.bouton)
         
         self.setLayout(self.mainLayout)
-        
-        
-        
+    
     def save():
         pass
     
