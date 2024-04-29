@@ -9,7 +9,8 @@ class Dico:
                "std::string": str,
                "double": float,
                "float": float,
-               "bool": bool,
-               '"enum_TypeCodedTarget"': Enumeration.enumDict
+               "bool": "boolean",
+               '"enum_TypeCodedTarget"': "enum_TypeCodedTarget",
+               '"enum_SysCoGeo"': "enum_SysCoGeo"
                }
     

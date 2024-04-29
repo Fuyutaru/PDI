@@ -7,6 +7,9 @@
          <BitEncoding>
             <Specifs>
                <hihi>bool</hihi>
+               <hoho>bool</hoho>
+               <coco>bool bool bool</coco>
+               <toto>"enum_TypeCodedTarget" "enum_TypeCodedTarget"</toto>
                <Type>"enum_TypeCodedTarget"</Type>
                <NbBits>size_t</NbBits>
                <FreqCircEq>size_t</FreqCircEq>

@@ -1,8 +1,8 @@
 class Champ():
-    def __init__(self, nom, type, balise):
+    def __init__(self, nom, type, path):
         self.nom = nom
         self.type = type
-        self.balise = balise
+        self.path = path
         self._valeur = None
     
     @property
