@@ -37,6 +37,7 @@ class XmlEditorGUI(QMainWindow):
         self.specification_xml_path = None
         self.data_xml_path = None
         self.specification_xml_structure = None
+        self.data_xml_structure = None
         self.saveButton = QPushButton()
         self.mainLayout = QVBoxLayout()
         
@@ -126,7 +127,9 @@ class XmlEditorGUI(QMainWindow):
                 self.specification_xml_structure = specif
                 print(self.specification_xml_path)
                 print(self.specification_xml_structure)
-            QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+                QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
         else:
             QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
 
@@ -136,9 +139,27 @@ class XmlEditorGUI(QMainWindow):
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
         if path:
             self.data_xml_path = path
-            self.loader = FileLoader(path)
-            self.loader.fileLoaded.connect(self.onFileLoaded)
-            self.loader.start()
+            
+            # self.loader = FileLoader(path)
+            # self.loader.fileLoaded.connect(self.onFileLoaded)
+            # self.loader.start()
+            
+            tree = ET.parse(self.data_xml_path)
+            strat = XmlManager()
+            
+            if (strat.verif(tree) == True):
+                data = DataType(strat, self.data_xml_path)
+
+                data.readFile()
+                self.data_xml_structure = data
+                print(self.specification_xml_path)
+                print(self.specification_xml_structure)
+                QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+        else:
+            QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+            
             
 
     def onFileLoaded(self, data):#add traitement
