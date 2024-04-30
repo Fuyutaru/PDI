@@ -40,7 +40,7 @@ if __name__ == "__main__":
     
     # print(specif.verif())
     
-    spe = xmlStrat.comparer(specif,data)
+    spe = xmlStrat.compare(specif,data)
     print(spe)
     
     # l = [Enumeration, "CERN", 'enum_TypeCodedTarget']
