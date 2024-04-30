@@ -1,6 +1,6 @@
-from Datatype import Datatype
+from DataType import DataType
 from lxml import etree
-from Champ import Champ
+from Field import Field
 from XmlManager import XmlManager
 import os
 import Enumeration
@@ -25,8 +25,8 @@ if __name__ == "__main__":
     dataStrat = XmlManager()
     
     
-    specif = Datatype(xmlStrat, path)
-    data = Datatype(dataStrat, data_path)
+    specif = DataType(xmlStrat, path)
+    data = DataType(dataStrat, data_path)
     
     specif.readFile()
     data.readFile()

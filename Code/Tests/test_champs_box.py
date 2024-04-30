@@ -6,7 +6,7 @@ Created on Wed Apr 24 16:36:50 2024
 """
 
 class Champ():
-    def __init__(self, nom, type, balise, boxLayout):
+    def __init__(self,nom, type, path, balise, boxLayout):
         self.nom = nom
         self.type = type
         self.path = path
