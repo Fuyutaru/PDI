@@ -1,3 +1,22 @@
+
+"""
+A partir de mon code, je souhaite faire en sorte que lorsque l'on charge un fichier de donnée, les informatons de celui ci apparaissent correctement dans les champs? Comment faire(théoriquement sous forme d'etape stp)?
+
+J'avais imaginer les etape suivante:
+    Etape 1:charger le fichiers de specif
+    Etape 2: charger le fichier de donnée
+    Etape 3: création d'une fonction permettant de verifier le fichier de specification selectionner
+    Etape 4 recuperation des donnée du fichier d'entre
+    Etape 5: fonction permettant d'integrer ses information dans le champs.
+    
+    c'est etape sont elles suffisante, quelle fonction rajouter?' developpe ta reflexion su mon code
+    
+    (Attention les informations recuperer = liste de classe champ,qui contient chaque balise unitaire (ouverte , fermer) et qui contient chaque ligne du tableau si xml de data fournit), liste avec obj de la classe champs, ajouter des lignes au tableau car defois fichiers preremplis
+
+ennonce les etapes a réaliser et les fonctions a créer pour permettre/mdoifier cela à partir de mon code
+    
+"""
+
 import sys
 import xml.etree.ElementTree as ET
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -22,8 +41,6 @@ class XmlEditorGUI(QMainWindow):
         #TEST D'AJOUT DES CHAMPS
         
         self.champs = champs
-        
-    
 
     
         self.setWindowTitle('Éditeur de Fichiers XML')
@@ -90,8 +107,10 @@ class XmlEditorGUI(QMainWindow):
 
     # for child in element:
     #     self.buildTree(item, child)
+    
 
     def loadSpecificationXml(self):
+        #met la fct de tchek/verif la direct
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de spécification XML', '', 'XML files (*.xml)')
         if path:
             self.specification_xml_path = path
@@ -107,41 +126,74 @@ class XmlEditorGUI(QMainWindow):
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
         if path:
             self.data_xml_path = path
-            tree = ET.parse(self.data_xml_path)
-            root = tree.getroot()
-            self.displayXmlData(root)
-            QMessageBox.information(self, 'Succès', 'Fichier de données XML chargé avec succès!')
-        else:
-            QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de données.')
+            self.loader = FileLoader(path)
+            self.loader.fileLoaded.connect(self.onFileLoaded)
+            self.loader.start()
+            
 
-
-
-    def displayXmlData(self, root):
-        for champ in self.champs:
-        # Pour chaque champ, trouver la correspondance dans le fichier XML et mettre à jour l'interface
-        # Ceci est une simplification. Vous devrez adapter en fonction de la structure de vos données XML.
-            value = root.find(champ.nom)
-            if value is not None and isinstance(getattr(self, champ.nom, None), QLineEdit):
-                getattr(self, champ.nom).setText(value.text)
-            elif value is not None and isinstance(getattr(self, champ.nom, None), QComboBox):
-                 getattr(self, champ.nom).setCurrentText(value.text)
-
-    def displayXmlData(self, root):
-        for champ in self.champs:
-            element = root.find(champ.nom)
-            if element is not None and champ.nom in self.widgets:
-                widget = self.widgets[champ.nom]
-                if isinstance(widget, QLineEdit):
-                    widget.setText(element.text)
-                elif isinstance(widget, QComboBox):
-                    index = widget.findText(element.text)
-                    if index != -1:
-                        widget.setCurrentIndex(index)
-
-
-    def onFileLoaded(self, data):
+    def onFileLoaded(self, data):#add traitement
+    #Récupération des données du fichier d'entrée :lois
         self.textEdit.setText(data)
         QMessageBox.information(self, 'Succès', 'Fichier de données XML chargé avec succès!')
+
+
+#xml manager, convert to filed, crzation class, readfile , xml.create data en l'assoc list champ  = xml.converttofile'
+
+    def integrerInformationsChamps(self, donnees):
+        # on parcourt tt les champ et on tcjeck si balise el, on regard esi l'indice est valide
+        # on remplis les champs(si champ normal->)
+        # on tcheck si le champs est en lien avec une clé de enumDict, si yes on remplis champs avec QComboBox et on l'add au layout
+        # on voit si l'indice est correct, selection option dans QComboBox puis add layout
+        #si champs pas enumDict c'est un cas QLineEdit et on refait la meme
+        
+        for i, champ in enumerate(self.champs):
+            if champ.balise == "el":
+                if i < len(donnees):
+                    champ.setValeur(donnees[i])
+            else:
+                if champ.type in Enumeration.enumDict:
+                        enumComboBox = QComboBox()
+                        enumComboBox.addItems(Enumeration.enumDict[champ.type])
+                        if i < len(donnees):
+                            enumComboBox.setCurrentText(donnees[i])
+                        enumLayout = QHBoxLayout()
+                        nom = QLabel(champ.nom)
+                        enumLayout.addWidget(nom)
+                        enumLayout.addWidget(enumComboBox)
+                        typeEnum = QLabel("(" + champ.type + ")")
+                        enumLayout.addWidget(typeEnum)
+                        self.mainLayout.addLayout(enumLayout)
+                else:
+                    if i < len(donnees):
+                        champLayout = QHBoxLayout()
+                        nom = QLabel(champ.nom)
+                        champLayout.addWidget(nom)
+                        champLineEdit = QLineEdit()
+                        champLineEdit.setText(donnees[i])
+                        champLayout.addWidget(champLineEdit)
+                        typeChamp = QLabel("(" + champ.type + ")")
+                        champLayout.addWidget(typeChamp)
+                        self.mainLayout.addLayout(champLayout)
+
+
+    def afficherInformations(self):
+        for i, champ in enumerate(self.champs):
+            if champ.balise == "el":
+                widget = self.mainLayout.itemAt(i)
+                if isinstance(widget, QHBoxLayout):
+                    line_edit = widget.itemAt(1).widget()
+                    line_edit.setText(champ.getValeur())
+            else:
+                widget_layout = self.mainLayout.itemAt(i)
+                if isinstance(widget_layout, QHBoxLayout):
+                    widget = widget_layout.itemAt(1).widget()
+                    if isinstance(widget, QComboBox):
+                        index = widget.findText(champ.getValeur())
+                        if index != -1:
+                            widget.setCurrentIndex(index)
+                    elif isinstance(widget, QLineEdit):
+                        widget.setText(champ.getValeur())
+
 
     def saveDataXml(self):
         if dh.validateXml(self.textEdit.toPlainText(), self.specification_xml_structure):
@@ -154,6 +206,8 @@ class XmlEditorGUI(QMainWindow):
             QMessageBox.information(self, 'Succès', 'Fichier de données XML enregistré avec succès!')
         else:
             QMessageBox.warning(self, 'Erreur', 'Le fichier de données XML contient des erreurs.')
+    
+    
     
     def ajouterChamps(self):
         listeChampTableau = []
@@ -188,55 +242,10 @@ class XmlEditorGUI(QMainWindow):
                 
         self.setLayout(self.mainLayout)
         
-    def ajouterChamps(self):
-        self.widgets = {}  # Dictionnaire pour conserver une référence aux widgets par nom de champ
-        listeChampTableau = []
-        n = len(self.champs)
-
-        for i in range(n):
-            if self.champs[i].balise == "el":
-                if i == n-1 or (i < n-1 and self.champs[i+1].balise != "el"):
-                    listeChampTableau.append(self.champs[i])
-                    self.ajouterTab(listeChampTableau)
-                    listeChampTableau = []
-                else:
-                    listeChampTableau.append(self.champs[i])
-            elif self.champs[i].type in Enumeration.enumDict:
-                            enumComboBox = QComboBox()
-                            enumComboBox.addItems(Enumeration.enumDict[self.champs[i].type])
-                            
-                            enumLayout = QHBoxLayout()
-                            nom = QLabel(self.champs[i].nom)
-                            enumLayout.addWidget(nom)
-                            enumLayout.addWidget(enumComboBox)
-                            self.widgets[self.champs[i].nom] = enumComboBox  # Enregistre le QComboBox dans le dictionnaire
-                            
-                            typeEnum = QLabel("(" + self.champs[i].type + ")")
-                            enumLayout.addWidget(typeEnum)
-                            self.mainLayout.addLayout(enumLayout)
-            else:
-                champLayout = QHBoxLayout()
-                nom = QLabel(self.champs[i].nom)
-                
-                champLayout.addWidget(nom)
-                                
-                lineEdit = QLineEdit()
-                champLayout.addWidget(lineEdit)
-                self.widgets[self.champs[i].nom] = lineEdit  # Enregistre le QLineEdit dans le dictionnaire
-                                
-                typeChamp = QLabel("(" + self.champs[i].type + ")")
-                champLayout.addWidget(typeChamp)
-                self.mainLayout.addLayout(champLayout)
-                                
-                self.setLayout(self.mainLayout)
+        
     
-            
-            
-            
-            
-            
     def ajouterTab(self, listeChampTableau):
-            
+        
             
         def addLine():
             rowPosition = tableau.rowCount()
@@ -279,5 +288,3 @@ if __name__ == "__main__":
     gui = XmlEditorGUI(champs)
     gui.show()
     sys.exit(app.exec_())
-    
-    
