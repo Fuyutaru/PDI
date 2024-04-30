@@ -1,23 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr 29 11:57:27 2024
+Created on Tue Apr 30 11:53:04 2024
 
 @author: Svetie
 """
 
+
 import sys
 import xml.etree.ElementTree as ET
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon,  QStandardItemModel, QStandardItem
 
+from DataType import DataType
+from XmlManager import XmlManager
 import data_handling as dh
 import FileLoader
 import Enumeration
-from Champ import Champ
+from Field import Field
 
 class XmlEditorGUI(QMainWindow):
-    def __init__(self, champs): #Champs sera a retirer quand on aura la conversion
+    def __init__(self, fields): #Champs sera a retirer quand on aura la conversion
                                 #des fichiers XML en liste de champs
         super().__init__()
         self.specification_xml_path = None
@@ -30,8 +33,8 @@ class XmlEditorGUI(QMainWindow):
         
         #TEST D'AJOUT DES CHAMPS
         
-        self.champs = champs
-        
+        self.fields = fields
+   
     
 
     
@@ -69,13 +72,14 @@ class XmlEditorGUI(QMainWindow):
         
         ####TEST CHAMPS####
         self.bouton = QPushButton("Ajouter champs")
-        self.bouton.clicked.connect(self.ajouterChamps)
+        self.bouton.clicked.connect(self.addFields)
         self.mainLayout.addWidget(self.bouton)
         ####TEST CHAMPS####
 
         buttonsLayout = QHBoxLayout()
         buttonsLayout.addWidget(saveButton)
         self.mainLayout.addLayout(buttonsLayout)
+        
 
         centralWidget = QWidget()
         centralWidget.setLayout(self.mainLayout)
@@ -120,45 +124,44 @@ class XmlEditorGUI(QMainWindow):
         else:
             QMessageBox.warning(self, 'Erreur', 'Le fichier de données XML contient des erreurs.')
     
-    def ajouterChamps(self):
-        listChampTable = []
-        n = len(self.champs)
+    def addFields(self):
         
-        
+        listFieldTable = []
+        n = len(self.fields)
         for i in range(n):
-            typeChamp = self.champs[i].type
-            pathChamp = self.champs[i].path
-            pathChampSplit = self.champs[i].path.split("/")
-            pathChampSplitNext = []
+            typeField = self.fields[i].type
+            pathField = self.fields[i].path
+            pathFieldSplit = self.fields[i].path.split("/")
+            pathFieldSplitNext = []
             
             
             if i < n-1 :
-                pathChampSplitNext = self.champs[i+1].path.split("/")
+                pathFieldSplitNext = self.fields[i+1].path.split("/")
             
-            if pathChampSplit[-1] == "el" :
-                self.addTable(pathChampSplit[-2], pathChamp, typeChamp)            
+            if pathFieldSplit[-1] == "el" :
+                self.addTable(pathFieldSplit[-2], pathField, typeField)            
                         
-            elif pathChampSplit[-2] == "el" :
-                if i == n-1 or (pathChampSplit[:-1] != pathChampSplitNext[:-1]) :
-                    listChampTable.append([pathChampSplit[-1], typeChamp[0]])
-                    name = pathChampSplit[-3]
-                    path = pathChamp[:-len(pathChampSplit[-1])]
-                    self.addChampTable(listChampTable, path, name)
-                    listChampTable = []
+            elif pathFieldSplit[-2] == "el" :
+                if i == n-1 or (pathFieldSplit[:-1] != pathFieldSplitNext[:-1]) :
+                    listFieldTable.append([pathFieldSplit[-1], typeField[0]])
+                    name = pathFieldSplit[-3]
+                    path = pathField[:-(len(pathFieldSplit[-1])+1)]
+                    self.addFieldTable(listFieldTable, path, name)
+                    listFieldTable = []
                     
                 else :
-                    listChampTable.append([pathChampSplit[-1], typeChamp[0]])
+                    listFieldTable.append([pathFieldSplit[-1], typeField[0]])
             
-            elif len(typeChamp) != 1 :
-                name = QLabel(pathChampSplit[-1])
+            elif len(typeField) != 1 :
+                name = QLabel(pathFieldSplit[-1])
                 multiTypeLayout = QHBoxLayout()
                 multiTypeLayout.addWidget(name)
                 count = 1
-                for t in typeChamp :
+                for t in typeField :
                     if t in Enumeration.enumDict :
                         enumComboBox = QComboBox()
                         enumComboBox.addItems(Enumeration.enumDict[t])
-                        enumComboBox.setObjectName(pathChamp + "/" + str(count) + " " + t)
+                        enumComboBox.setObjectName(pathField + "/" + str(count) + " " + t)
                         enumLayout = QHBoxLayout()
                         enumLayout.addWidget(enumComboBox)
                         typeEnum = QLabel("(" + t + ")")
@@ -166,45 +169,58 @@ class XmlEditorGUI(QMainWindow):
                         multiTypeLayout.addLayout(enumLayout)
                         count+=1
                     else :
-                        champLayout = QHBoxLayout()
-                        champ = QLineEdit()
-                        champ.setObjectName(pathChamp + "/" + str(count) + " " + t)
-                        champLayout.addWidget(champ)
-                        typeChamp = QLabel("(" + t + ")")
-                        champLayout.addWidget(typeChamp)
+                        fieldLayout = QHBoxLayout()
+                        field = QLineEdit()
+                        field.setObjectName(pathField + "/" + str(count) + " " + t)
+                        fieldLayout.addWidget(field)
+                        typeField = QLabel("(" + t + ")")
+                        fieldLayout.addWidget(typeField)
                         count+=1
-                        multiTypeLayout.addLayout(champLayout)
+                        multiTypeLayout.addLayout(fieldLayout)
                         
                 self.mainLayout.addLayout(multiTypeLayout)
                 
                         
                         
             
-            elif typeChamp[0] in Enumeration.enumDict :
+            elif typeField[0] in Enumeration.enumDict :
                 enumComboBox = QComboBox()
-                enumComboBox.addItems(Enumeration.enumDict[typeChamp[0]])
-                enumComboBox.setObjectName(pathChamp + " " + typeChamp[0])
+                enumComboBox.addItems(Enumeration.enumDict[typeField[0]])
+                enumComboBox.setObjectName(pathField + " " + typeField[0])
                 enumLayout = QHBoxLayout()
-                nom = QLabel(pathChampSplit[-1])
+                nom = QLabel(pathFieldSplit[-1])
                 enumLayout.addWidget(nom)
                 enumLayout.addWidget(enumComboBox)
-                typeEnum = QLabel("(" + typeChamp[0] + ")")
+                typeEnum = QLabel("(" + typeField[0] + ")")
                 enumLayout.addWidget(typeEnum)
                 self.mainLayout.addLayout(enumLayout)
             
             
             else :
-                champLayout = QHBoxLayout()
-                nom = QLabel(pathChampSplit[-1])
-                champ = QLineEdit()
-                champ.setObjectName(pathChamp + " " + typeChamp[0])
-                champLayout.addWidget(nom)
-                champLayout.addWidget(champ)
-                typeChamp = QLabel("(" + typeChamp[0] + ")")
-                champLayout.addWidget(typeChamp)
-                self.mainLayout.addLayout(champLayout)
-                
+                fieldLayout = QHBoxLayout()
+                nom = QLabel(pathFieldSplit[-1])
+                field = QLineEdit()
+                field.setObjectName(pathField + " " + typeField[0])
+                fieldLayout.addWidget(nom)
+                fieldLayout.addWidget(field)
+                typeField = QLabel("(" + typeField[0] + ")")
+                fieldLayout.addWidget(typeField)
+                self.mainLayout.addLayout(fieldLayout)
+        
+        scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        widget = QWidget()
+        self.mainLayout.addStretch()
+        widget.setLayout(self.mainLayout)
+        
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+
+        self.setCentralWidget(scroll)
+        
         self.setLayout(self.mainLayout)
+        
     
     def addTable(self, name, path, types):
         
@@ -242,8 +258,9 @@ class XmlEditorGUI(QMainWindow):
         self.mainLayout.addLayout(completeLayout)
         
         
+        
     
-    def addChampTable(self, listChampTable, path, name):
+    def addFieldTable(self, listFieldTable, path, name):
         
             
         def addLine():
@@ -259,12 +276,12 @@ class XmlEditorGUI(QMainWindow):
         table = QTableWidget()
         table.setObjectName(path + " el")
         
-        n = len(listChampTable)
+        n = len(listFieldTable)
         table.setRowCount(1)
         table.setColumnCount(n)
         columns = []
         for i in range(n) :
-            columns.append(listChampTable[i][0]+ "\n(" + listChampTable[i][1]+")")
+            columns.append(listFieldTable[i][0]+ "\n(" + listFieldTable[i][1]+")")
         table.setHorizontalHeaderLabels(columns)
         
         table.move(0, 0)
@@ -301,8 +318,6 @@ class XmlEditorGUI(QMainWindow):
                     nameColumn = header2[0]
                     typeColumn = header2[1][1:-1]
                     headers.append((nameColumn,typeColumn))
-                else :
-                    headers.append(header[1:-1])
             table.append(headers)
             
                 
@@ -320,22 +335,39 @@ class XmlEditorGUI(QMainWindow):
 
 if __name__ == "__main__":
     
-    champ1 = Champ("Number", ["int"], ".../Number")
-    champ2 = Champ("Id", ["int"], ".../Id")
-    champ3 = Champ("Name", ["string", "string"],".../Name")
-    champ4 = Champ("Number", ["int"], "haha/el/Number")
-    champ5 = Champ("Id", ["int"], "haha/el/Id")
-    champ6 = Champ("Name", ["string"], "haha/el/Name")
-    champ8 = Champ("Number", ["int"], "héhé/el/Number")
-    champ9 = Champ("Id", ["int"], "héhé/el/Id")
-    champ10 = Champ("Arg", ["string"],".../Arg")
-    champ11 = Champ("AAAARRRRGG", ["Float","Float"],"hoho/el")
-    champ12 = Champ("Truc", ["string", "enum_SysCoGeo"],".../Truc")
+    # Test your XML class
+    xmlStrat = XmlManager()
+    xml = DataType("specification", xmlStrat,"example/FullSpecif.xml")
+    Dataxml = DataType("specification", xmlStrat,"example/Data_FullSpecif.xml")
+    xml.readFile()
+    Dataxml.readFile()
     
-    champ7 = Champ("SystemeDeCoordonnées", ["enum_SysCoGeo"], "num/nim/SystemeDeCoordonnées")
-    champs= [champ1, champ2,champ3, champ7, champ4, champ5, champ6, champ8, champ9, champ10, champ12, champ11]
+    # for el in Dataxml.content.iter() :
+    #     print(el.getroottree().getpath(el))
+    data_empty = xml.createData()
+    # data_empty.convert2File()
+
+    field_list = xml.convert2Field(data_empty.content)
+
+    
+    
+    
+    field1 = Field("Number", ["int"], ".../Number","")
+    field2 = Field("Id", ["int"], ".../Id","")
+    field3 = Field("Name", ["string", "string"],".../Name","")
+    field4 = Field("Number", ["int"], "haha/el/Number","")
+    field5 = Field("Id", ["int"], "haha/el/Id","")
+    field6 = Field("Name", ["string"], "haha/el/Name","")
+    field8 = Field("Number", ["int"], "héhé/el/Number","")
+    field9 = Field("Id", ["int"], "héhé/el/Id","")
+    field10 = Field("Arg", ["string"],".../Arg","")
+    field11 = Field("AAAARRRRGG", ["Float","Float"],"hoho/el","")
+    field12 = Field("Truc", ["string", "enum_SysCoGeo"],".../Truc","")
+    
+    field7 = Field("SystemeDeCoordonnées", ["enum_SysCoGeo"], "num/nim/SystemeDeCoordonnées","")
+    fields= [field1, field2,field3, field7, field4, field5, field6, field8, field9, field10, field12, field11]
     
     app = QApplication(sys.argv)
-    gui = XmlEditorGUI(champs)
+    gui = XmlEditorGUI(field_list)
     gui.show()
     sys.exit(app.exec_())
