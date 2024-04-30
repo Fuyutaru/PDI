@@ -26,21 +26,24 @@ from PyQt5.QtGui import QIcon,  QStandardItemModel, QStandardItem
 import data_handling as dh
 import FileLoader
 import Enumeration
-from Champ import Champ
+from Field import Field
+from XmlManager import XmlManager
+from DataType import DataType
 
 class XmlEditorGUI(QMainWindow):
-    def __init__(self, champs): #Champs sera a retirer quand on aura la conversion
+    def __init__(self): #Champs sera a retirer quand on aura la conversion
                                 #des fichiers XML en liste de champs
         super().__init__()
         self.specification_xml_path = None
         self.data_xml_path = None
         self.specification_xml_structure = None
+        self.data_xml_structure = None
         self.saveButton = QPushButton()
         self.mainLayout = QVBoxLayout()
         
         #TEST D'AJOUT DES CHAMPS
         
-        self.champs = champs
+        self.champs = None
 
     
         self.setWindowTitle('Éditeur de Fichiers XML')
@@ -115,8 +118,18 @@ class XmlEditorGUI(QMainWindow):
         if path:
             self.specification_xml_path = path
             tree = ET.parse(self.specification_xml_path)
-            self.specification_xml_structure = dh.analyzeSpecification(tree)
-            QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+            strat = XmlManager()
+            # self.specification_xml_structure = dh.analyzeSpecification(tree)
+            if (strat.verif(tree) == True):
+                specif = DataType(strat, self.specification_xml_path)
+                print(self.specification_xml_path)
+                specif.readFile()
+                self.specification_xml_structure = specif
+                print(self.specification_xml_path)
+                print(self.specification_xml_structure)
+                QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
         else:
             QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
 
@@ -126,9 +139,27 @@ class XmlEditorGUI(QMainWindow):
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
         if path:
             self.data_xml_path = path
-            self.loader = FileLoader(path)
-            self.loader.fileLoaded.connect(self.onFileLoaded)
-            self.loader.start()
+            
+            # self.loader = FileLoader(path)
+            # self.loader.fileLoaded.connect(self.onFileLoaded)
+            # self.loader.start()
+            
+            tree = ET.parse(self.data_xml_path)
+            strat = XmlManager()
+            
+            if (strat.verif(tree) == True):
+                data = DataType(strat, self.data_xml_path)
+
+                data.readFile()
+                self.data_xml_structure = data
+                print(self.specification_xml_path)
+                print(self.specification_xml_structure)
+                QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+        else:
+            QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+            
             
 
     def onFileLoaded(self, data):#add traitement
@@ -275,13 +306,13 @@ class XmlEditorGUI(QMainWindow):
 
 if __name__ == "__main__":
     
-    champ1 = Champ("Number", "int", 1)
-    champ2 = Champ("Id", "int", 2)
-    champ3 = Champ("Name", "string", 3)
-    champ4 = Champ("Number", "int", "el")
-    champ5 = Champ("Id", "int", "el")
-    champ6 = Champ("Name", "string", "el")
-    champ7 = Champ("Systeme de coordonnées", "enum_SysCoGeo", 4)
+    champ1 = Field("Number", "int", 1)
+    champ2 = Field("Id", "int", 2)
+    champ3 = Field("Name", "string", 3)
+    champ4 = Field("Number", "int", "el")
+    champ5 = Field("Id", "int", "el")
+    champ6 = Field("Name", "string", "el")
+    champ7 = Field("Systeme de coordonnées", "enum_SysCoGeo", 4)
     champs= [champ1, champ2, champ4, champ5, champ6, champ3, champ7, champ4, champ5]
     
     app = QApplication(sys.argv)
