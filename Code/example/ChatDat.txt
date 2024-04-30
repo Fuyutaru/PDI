@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+    <Number>123</Number>
+    <Id>456</Id>
+    <Name>John Doe</Name>
+    <Systeme de coordonnées>GPS</Systeme de coordonnées>
+</Root>

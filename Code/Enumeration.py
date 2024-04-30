@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr  3 16:31:33 2024
+Created on Wed Apr 24 14:23:07 2024
 
-@author: Svetie
+@author: Laurie
 """
 
 enumDict = {'enum_TypeCodedTarget': ["IGNIndoor","IGNDroneSym","IGNDroneTop","CERN"],
