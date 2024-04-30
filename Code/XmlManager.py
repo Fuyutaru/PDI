@@ -118,7 +118,7 @@ class XmlManager(Strategy):
             print("Error: Root not find")
             
         data_filename = filename[:-4] + "_data.xml"
-        data_XML = DataType("data",self,data_filename)
+        data_XML = DataType(self,data_filename)
         data_XML.content = data_tree
         return data_XML
         
