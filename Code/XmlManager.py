@@ -188,7 +188,7 @@ class XmlManager(Strategy):
     
     
     
-    def comparer(self, type_data, data):
+    def compare(self, type_data, data):
         # type_elements = OrderedDict((element.tag, element_type) for element in r.iter() for element_type in [Dico.content.get(element.text, str)])
         # type_elements = OrderedDict()
 

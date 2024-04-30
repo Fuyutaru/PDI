@@ -25,6 +25,6 @@ class DataType():
     def verif(self):
         return self.strat.verif(self.content)
     
-    def comparer(self):
-        pass
+    def compare(self, typeTree, dataTree):
+        return self.strat.compare(typeTree, dataTree)
 
