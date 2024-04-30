@@ -22,5 +22,5 @@ class Strategy(ABC):
         pass
     
     @abstractmethod
-    def comparer(self):
+    def compare(self):
         pass
