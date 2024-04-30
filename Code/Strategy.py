@@ -21,6 +21,6 @@ class Strategy(ABC):
     def verif(self):
         pass
     
-    # @abstractmethod
-    # def comparer(self):
-    #     pass
+    @abstractmethod
+    def comparer(self):
+        pass

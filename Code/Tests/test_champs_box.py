@@ -9,7 +9,7 @@ class Champ():
     def __init__(self, nom, type, balise, boxLayout):
         self.nom = nom
         self.type = type
-        self.balise = balise
+        self.path = path
         self._valeur = None
         self.boxLayout = boxLayout
     

@@ -6,6 +6,10 @@
       <FullSpecifTarget>
          <BitEncoding>
             <Specifs>
+               <hihi></hihi>
+               <hoho>False</hoho>
+               <coco>0 True False</coco>
+               <toto>"CERN" "IGNIndoor"</toto>
                <Type>"CERN"</Type>
                <NbBits>14</NbBits>
                <FreqCircEq>14</FreqCircEq>
