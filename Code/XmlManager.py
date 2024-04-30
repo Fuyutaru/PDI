@@ -55,7 +55,7 @@ class XmlManager(Strategy):
                 # Création d'un objet pour chaque balise à la fin de branche
                 if len(specElement) == 0 and specElement.tag != "el":  # Vérifier si c'est une balise finale (pas d'enfants)
                     obj_name = specElement.tag
-                    obj_type = [Type for Type in specElement.text.split("/")]
+                    obj_type = [Type for Type in specElement.text.split(" ")]
                     obj_path = specElement.getroottree().getpath(specElement)[5:]
                     
                     dataElement = dataTree.find(obj_path)
@@ -69,12 +69,12 @@ class XmlManager(Strategy):
                 elif len(specElement) == 0 and specElement.tag == "el" :
                     
                     obj_name = specElement.tag
-                    obj_type = [Type for Type in specElement.text.split("/")]
+                    obj_type = [Type for Type in specElement.text.split(" ")]
                     obj_path = specElement.getroottree().getpath(specElement)[5:]
                     
                     for elElement in dataTree.findall(obj_path):
                         if isinstance(elElement.tag, str) :
-                            obj_value = [val for val in elElement.text.split("/")]
+                            obj_value = [val for val in elElement.text.split(" ")]
                             
                             field = Field(obj_name, obj_type, obj_path, obj_value)
                             field_list.append(field)
@@ -94,8 +94,8 @@ class XmlManager(Strategy):
                                 if isinstance(child.tag, str) :
                                     obj_name = child.tag
                                     obj_path = elElement.getroottree().getpath(elElement)
-                                    obj_value = [val for val in child.text.split("/")]
-                                    obj_type = [Type for Type in types[obj_name].split("/")]
+                                    obj_value = [val for val in child.text.split(" ")]
+                                    obj_type = [Type for Type in types[obj_name].split(" ")]
                                     
                                     field = Field(obj_name, obj_type, obj_path, obj_value)
                                     field_list.append(field)

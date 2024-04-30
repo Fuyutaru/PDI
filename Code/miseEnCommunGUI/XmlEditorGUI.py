@@ -123,6 +123,8 @@ class XmlEditorGUI(QMainWindow):
     def ajouterChamps(self):
         listChampTable = []
         n = len(self.champs)
+        
+        
         for i in range(n):
             typeChamp = self.champs[i].type
             pathChamp = self.champs[i].path

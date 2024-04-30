@@ -8,10 +8,12 @@ Created on Tue Apr 30 11:53:04 2024
 
 import sys
 import xml.etree.ElementTree as ET
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon,  QStandardItemModel, QStandardItem
 
+from DataType import DataType
+from XmlManager import XmlManager
 import data_handling as dh
 import FileLoader
 import Enumeration
@@ -32,7 +34,7 @@ class XmlEditorGUI(QMainWindow):
         #TEST D'AJOUT DES CHAMPS
         
         self.fields = fields
-        
+   
     
 
     
@@ -77,6 +79,7 @@ class XmlEditorGUI(QMainWindow):
         buttonsLayout = QHBoxLayout()
         buttonsLayout.addWidget(saveButton)
         self.mainLayout.addLayout(buttonsLayout)
+        
 
         centralWidget = QWidget()
         centralWidget.setLayout(self.mainLayout)
@@ -122,6 +125,7 @@ class XmlEditorGUI(QMainWindow):
             QMessageBox.warning(self, 'Erreur', 'Le fichier de données XML contient des erreurs.')
     
     def addFields(self):
+        
         listFieldTable = []
         n = len(self.fields)
         for i in range(n):
@@ -141,7 +145,7 @@ class XmlEditorGUI(QMainWindow):
                 if i == n-1 or (pathFieldSplit[:-1] != pathFieldSplitNext[:-1]) :
                     listFieldTable.append([pathFieldSplit[-1], typeField[0]])
                     name = pathFieldSplit[-3]
-                    path = pathField[:-len(pathFieldSplit[-1])]
+                    path = pathField[:-(len(pathFieldSplit[-1])+1)]
                     self.addFieldTable(listFieldTable, path, name)
                     listFieldTable = []
                     
@@ -202,8 +206,21 @@ class XmlEditorGUI(QMainWindow):
                 typeField = QLabel("(" + typeField[0] + ")")
                 fieldLayout.addWidget(typeField)
                 self.mainLayout.addLayout(fieldLayout)
-                
+        
+        scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        widget = QWidget()
+        self.mainLayout.addStretch()
+        widget.setLayout(self.mainLayout)
+        
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+
+        self.setCentralWidget(scroll)
+        
         self.setLayout(self.mainLayout)
+        
     
     def addTable(self, name, path, types):
         
@@ -239,6 +256,7 @@ class XmlEditorGUI(QMainWindow):
         completeLayout.addWidget(tableName)
         completeLayout.addLayout(tabLayout)
         self.mainLayout.addLayout(completeLayout)
+        
         
         
     
@@ -300,8 +318,6 @@ class XmlEditorGUI(QMainWindow):
                     nameColumn = header2[0]
                     typeColumn = header2[1][1:-1]
                     headers.append((nameColumn,typeColumn))
-                else :
-                    headers.append(header[1:-1])
             table.append(headers)
             
                 
@@ -319,6 +335,23 @@ class XmlEditorGUI(QMainWindow):
 
 if __name__ == "__main__":
     
+    # Test your XML class
+    xmlStrat = XmlManager()
+    xml = DataType("specification", xmlStrat,"example/FullSpecif.xml")
+    Dataxml = DataType("specification", xmlStrat,"example/Data_FullSpecif.xml")
+    xml.readFile()
+    Dataxml.readFile()
+    
+    # for el in Dataxml.content.iter() :
+    #     print(el.getroottree().getpath(el))
+    data_empty = xml.createData()
+    # data_empty.convert2File()
+
+    field_list = xml.convert2Field(data_empty.content)
+
+    
+    
+    
     field1 = Field("Number", ["int"], ".../Number","")
     field2 = Field("Id", ["int"], ".../Id","")
     field3 = Field("Name", ["string", "string"],".../Name","")
@@ -335,6 +368,6 @@ if __name__ == "__main__":
     fields= [field1, field2,field3, field7, field4, field5, field6, field8, field9, field10, field12, field11]
     
     app = QApplication(sys.argv)
-    gui = XmlEditorGUI(fields)
+    gui = XmlEditorGUI(field_list)
     gui.show()
     sys.exit(app.exec_())
