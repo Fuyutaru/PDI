@@ -10,7 +10,7 @@
                <hoho>False</hoho>
                <coco>0 True False</coco>
                <toto>"CERN" "IGNIndoor"</toto>
-               <Type>"ratus"</Type>
+               <Type>"CERN"</Type>
                <NbBits>14</NbBits>
                <FreqCircEq>14</FreqCircEq>
                <MinHammingD>1</MinHammingD>

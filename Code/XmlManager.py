@@ -56,16 +56,66 @@ class XmlManager(Strategy):
                 return float(value)
             except ValueError:
                 return value.strip('"')
+            
+    
+    def testCompare(self, datatype, data):
+        elt2 = datatype
+        elt1 = data
+        if elt1 == '':
+            pass
+        else:
+            if (elt2 == "boolean"):
+                # print("boooooooooooooooooooooooooooooooool")
+                if not (elt1 in ('0', '1', 'True', 'False')):
+                    # print(elt1)
+                    print("boooooooooooooooooooooooooooooooool")
+                    print(elt1)
+                    return False
+            elif (elt2 in enum.enumName):
+                # print("j'suis un enuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuum")
+                value = enum.enumDict.get(elt2)
+                # print(value)
+                # print(elt2)
+                if elt1 not in value:
+                    print("enuuuuuuuuuuuuuuuuuuuuuuuum")
+                    print(elt1)
+                    return False
+            else:
+                converted_val = self.convert_to_appropriate_type(elt1)
+                # print("type", elt2)
+                # print("val", type(elt1))
+                # if type(elt1) != elt2:
+                #     return False
+                if (elt2 == float and (type(converted_val) not in [float, int])):
+                    print("floaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat")
+                    print(elt2)
+                    print(type(converted_val), converted_val, type(converted_val) not in [float, int])
+                    return False
+                elif (type(converted_val) != elt2):
+                    # print("adfdsfdfdqfsdqfdsqfsdfsqfsf")
+                    # print(converted_val)
+                    # print(elt2)
+                    #pb quand c'est 0 ca compte comme int et non float 
+                    print("normalllllllllllllllllllllllllllllllllll")
+                    print(converted_val, type(converted_val))
+                    print(elt2)
+                    return False
+            
+    
     
     
     def comparer(self, type_data, data):
         # type_elements = OrderedDict((element.tag, element_type) for element in r.iter() for element_type in [Dico.content.get(element.text, str)])
         # type_elements = OrderedDict()
 
-        list_t, list_d = self.iterate(type_data, data)
+        list_t, list_d, paths_t, paths_d = self.iterate(type_data, data)
+        
+        
+        if paths_d != paths_t:
+            return False
 
 
-        print("dsfqs", list_d)
+        # print("dsfqs", list_d)
         # print(list_t)
         
         for d in list_d:
@@ -74,42 +124,30 @@ class XmlManager(Strategy):
                 # print(t)
                 if d[0] == t[0]:
                     # print("meme cheminnnnnnnnnnnnnnnnnnnnnnnnnnnn")
-                    if isinstance(t[1], list) and isinstance(d[1], list) and len(t[1]) == len(d[1]):
+                    if isinstance(t[1], list) and isinstance(d[1], list):
                         # print("j'suis une listeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
                         # print(t[1], "sfhijsqhofhdsfsqifhqifhdsqjfsqijsdfqjs")
+                        if len(t[1]) != len(d[1]):
+                            return False
+                        
+                        
                         # on parcours les listes dans le cas où on a plusieurs type de suite
                         for elt1, elt2 in zip(d[1], t[1]):
                             # print("j'suis dans le zippppppppppppppppppp")
 
-                            if (elt2 == "boolean"):
-                                print("boooooooooooooooooooooooooooooooool")
-                                if not (elt1 in ('0', '1', 'True', 'False')):
-                                    print(elt1)
-                                    return False
-                            elif (elt2 in enum.enumName):
-                                print("j'suis un enuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuum")
-                                value = enum.enumDict.get(elt2)
-                                print(value)
-                                print(elt2)
-                                if elt1 not in value:
-                                    return False
-                            elif elt2 == '':
-                                pass
-                            else:
-                                converted_val = self.convert_to_appropriate_type(elt1)
-                                # print("type", elt2)
-                                # print("val", type(elt1))
-                                # if type(elt1) != elt2:
-                                #     return False
-                                if (type(converted_val) != elt2):
-                                    print("adfdsfdfdqfsdqfdsqfsdfsqfsf")
-                                    print(converted_val)
-                                    print(elt2)
-                                    #pb quand c'est 0 ca compte comme int et non float 
-                                    return False
-                    else:
+                            return self.testCompare(elt2, elt1)
+                    
+                    elif (isinstance(t[1], list) and not isinstance(d[1], list)) or (not isinstance(t[1], list) and isinstance(d[1], list)):
+                        return False
+
+                    elif (not isinstance(t[1], list) and not isinstance(d[1], list)):
                         #l'autre cas
-                        pass
+                        print("casssssssssssssssssssssssssssssss normal")
+                        print("type",t[1])
+                        print("val", d[1])
+                        return self.testCompare(t[1], d[1])
+                    
+        print("Truuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuue")
         return True
             
         # return type_elements
@@ -125,9 +163,14 @@ class XmlManager(Strategy):
         list_t = []
         list_d = []
         
+        paths_t = []
+        paths_d = []
+        
         for element1 in r_t.iter():
             if len(element1) == 0 and isinstance(element1.tag, str):
                 path = self.get_node_path(element1)
+                if path not in paths_t:
+                    paths_t.append(path)
                 if ' ' in element1.text:
                     text = element1.text.split()
                     for i in range(len(text)):
@@ -140,6 +183,8 @@ class XmlManager(Strategy):
         for element2 in r_d.iter():
             if len(list(element2)) == 0 and isinstance(element2.tag, str):
                 path_d = self.get_node_path(element2)
+                if path_d not in paths_d:
+                    paths_d.append(path_d)
                 
                 if element2.text is None:
                     text_d = ''
@@ -151,5 +196,5 @@ class XmlManager(Strategy):
                 
                 list_d.append([path_d, text_d])
         
-        return list_t, list_d
+        return list_t, list_d, paths_t, paths_d
 
