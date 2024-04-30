@@ -5,7 +5,6 @@ class Field():
         self.path = path
         self._value = value
 
-    
     @property
     def valeur(self):
         return self._valeur
