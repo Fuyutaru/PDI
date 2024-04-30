@@ -30,14 +30,14 @@ if __name__ == "__main__":
     xml.readFile()
     Dataxml.readFile()
     
-    for el in Dataxml.content.iter() :
-        print(el.getroottree().getpath(el))
-    # data_empty = xml.createData()
+    # for el in Dataxml.content.iter() :
+    #     print(el.getroottree().getpath(el))
+    data_empty = xml.createData()
     # data_empty.convert2File()
 
-    # field_list = xml.convert2Field()
-    # for i in range (5) :
-    #     print(field_list[i].type)
+    field_list = xml.convert2Field(data_empty.content)
+    for i in range (len(field_list)) :
+        print(field_list[i]._value)
     
     # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     # root = xml.content.getroot()

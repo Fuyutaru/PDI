@@ -15,8 +15,8 @@ class DataType ():
     def convert2File(self):
         self.strat.convert2File(self.content,self.filename)
         
-    def convert2Field(self) :
-        return self.strat.convert2Field(self.content)
+    def convert2Field(self, dataTree) :
+        return self.strat.convert2Field(self.content, dataTree)
         
     def createData(self) :
         return self.strat.createData(self.content, self.filename)

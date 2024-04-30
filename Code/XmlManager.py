@@ -53,47 +53,49 @@ class XmlManager(Strategy):
             if isinstance(specElement.tag, str) :
                 
                 # Création d'un objet pour chaque balise à la fin de branche
-                if len(specElement) == 0 and specElement.name != "el":  # Vérifier si c'est une balise finale (pas d'enfants)
+                if len(specElement) == 0 and specElement.tag != "el":  # Vérifier si c'est une balise finale (pas d'enfants)
                     obj_name = specElement.tag
-                    obj_type = [Type for Type in specElement.text.slice("/")]
-                    obj_path = specElement.getroottree().getpath(specElement)
+                    obj_type = [Type for Type in specElement.text.split("/")]
+                    obj_path = specElement.getroottree().getpath(specElement)[5:]
                     
-                    dataElement = specTree.find(obj_path)
+                    dataElement = dataTree.find(obj_path)
                     
-                    obj_value = [val for val in dataElement.text.slice(" ")]
+                    obj_value = [val for val in dataElement.text.split(" ")]
                     
                     # Créer l'objet et l'ajouter à la liste
                     field = Field(obj_name, obj_type, obj_path, obj_value)
                     field_list.append(field)
                         
-                elif len(specElement) == 0 and specElement.name == "el" :
+                elif len(specElement) == 0 and specElement.tag == "el" :
                     
                     obj_name = specElement.tag
-                    obj_type = [Type for Type in specElement.text.slice("/")]
-                    obj_path = specElement.getroottree().getpath(specElement)
+                    obj_type = [Type for Type in specElement.text.split("/")]
+                    obj_path = specElement.getroottree().getpath(specElement)[5:]
                     
                     for elElement in dataTree.findall(obj_path):
-                        if isinstance(specElement.tag, str) :
-                            obj_value = elElement.text
+                        if isinstance(elElement.tag, str) :
+                            obj_value = [val for val in elElement.text.split("/")]
                             
                             field = Field(obj_name, obj_type, obj_path, obj_value)
                             field_list.append(field)
                         
-                elif len(specElement) != 0 and specElement.name == "el" :
+                elif len(specElement) != 0 and specElement.tag == "el" :
                     
                     # Récupérer les types associés aux enfants de specElement
                     types = {child.tag: child.text for child in specElement}
-                    # PROBLEME PARCE QUE SI TYPE = DOUBLE DOUBLE, DICO = PAS CONTENT
+                    obj_path = specElement.getroottree().getpath(specElement)[5:]
+                    
                     # Parcourir les éléments correspondants dans le fichier de données
                     for elElement in dataTree.findall(obj_path):
-                        if isinstance(specElement.tag, str) :
+                        
+                        if isinstance(elElement.tag, str) :
                             
                             for child in elElement:
-                                if isinstance(specElement.tag, str) :
+                                if isinstance(child.tag, str) :
                                     obj_name = child.tag
                                     obj_path = elElement.getroottree().getpath(elElement)
-                                    obj_value = child.text
-                                    obj_type = types[obj_name]
+                                    obj_value = [val for val in child.text.split("/")]
+                                    obj_type = [Type for Type in types[obj_name].split("/")]
                                     
                                     field = Field(obj_name, obj_type, obj_path, obj_value)
                                     field_list.append(field)
