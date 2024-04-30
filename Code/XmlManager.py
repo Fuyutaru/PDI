@@ -84,20 +84,22 @@ class XmlManager(Strategy):
             # print("val", type(elt1))
             # if type(elt1) != elt2:
             #     return False
-            if (elt2 == float and (type(converted_val) not in [float, int])):
-                print("floaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat")
-                print(elt2)
-                print(type(converted_val), converted_val, type(converted_val) not in [float, int])
-                return False
-            elif (type(converted_val) != elt2):
-                # print("adfdsfdfdqfsdqfdsqfsdfsqfsf")
-                # print(converted_val)
-                # print(elt2)
-                #pb quand c'est 0 ca compte comme int et non float 
-                print("normalllllllllllllllllllllllllllllllllll")
-                print(converted_val, type(converted_val))
-                print(elt2)
-                return False
+            if (elt2 == float):
+                if (type(converted_val) not in [float, int]):
+                    print("floaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat")
+                    print(elt2)
+                    print(type(converted_val), converted_val, type(converted_val) not in [float, int])
+                    return False
+            else:
+                if (type(converted_val) != elt2):
+                    # print("adfdsfdfdqfsdqfdsqfsdfsqfsf")
+                    # print(converted_val)
+                    # print(elt2)
+                    #pb quand c'est 0 ca compte comme int et non float 
+                    print("normalllllllllllllllllllllllllllllllllll")
+                    print(converted_val, type(converted_val))
+                    print(elt2)
+                    return False
             
     
     
@@ -135,93 +137,16 @@ class XmlManager(Strategy):
                             for elt1, elt2 in zip(d[1], t[1]):
                                 # print("j'suis dans le zippppppppppppppppppp")
 
-                                if (elt2 == "boolean"):
-                                    # print("boooooooooooooooooooooooooooooooool")
-                                    if not (elt1 in ('0', '1', 'True', 'False')):
-                                        # print(elt1)
-                                        print("boooooooooooooooooooooooooooooooool")
-                                        print(elt1)
-                                        return False
-                                elif (elt2 in enum.enumName):
-                                    # print("j'suis un enuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuum")
-                                    value = enum.enumDict.get(elt2)
-                                    # print(value)
-                                    # print(elt2)
-                                    if elt1 not in value:
-                                        print("enuuuuuuuuuuuuuuuuuuuuuuuum")
-                                        print(elt1)
-                                        return False
-                                else:
-                                    converted_val = self.convert_to_appropriate_type(elt1)
-                                    # print("type", elt2)
-                                    # print("val", type(elt1))
-                                    # if type(elt1) != elt2:
-                                    #     return False
-                                    if (elt2 == float):
-                                        if (type(converted_val) not in [float, int]):
-                                            print("floaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat")
-                                            print(elt2)
-                                            print(type(converted_val), converted_val, type(converted_val) not in [float, int])
-                                            return False
-                                    else:
-                                        if (type(converted_val) != elt2):
-                                            # print("adfdsfdfdqfsdqfdsqfsdfsqfsf")
-                                            # print(converted_val)
-                                            # print(elt2)
-                                            #pb quand c'est 0 ca compte comme int et non float 
-                                            print("normalllllllllllllllllllllllllllllllllll")
-                                            print(converted_val, type(converted_val))
-                                            print(elt2)
-                                            return False
+                                if (self.testCompare(elt2, elt1) == False):
+                                    return False
                         
                         elif (isinstance(t[1], list) and not isinstance(d[1], list)) or (not isinstance(t[1], list) and isinstance(d[1], list)):
                             return False
 
                         elif (not isinstance(t[1], list) and not isinstance(d[1], list)):
                             #l'autre cas
-                            print("casssssssssssssssssssssssssssssss normal")
-                            print("type",t[1])
-                            print("val", d[1])
-                            elt1 = d[1]
-                            elt2 = t[1]
-                            if (elt2 == "boolean"):
-                                # print("boooooooooooooooooooooooooooooooool")
-                                if not (elt1 in ('0', '1', 'True', 'False')):
-                                    # print(elt1)
-                                    print("boooooooooooooooooooooooooooooooool")
-                                    print(elt1)
-                                    return False
-                            elif (elt2 in enum.enumName):
-                                # print("j'suis un enuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuum")
-                                value = enum.enumDict.get(elt2)
-                                # print(value)
-                                # print(elt2)
-                                if elt1 not in value:
-                                    print("enuuuuuuuuuuuuuuuuuuuuuuuum")
-                                    print(elt1)
-                                    return False
-                            else:
-                                converted_val = self.convert_to_appropriate_type(elt1)
-                                # print("type", elt2)
-                                # print("val", type(elt1))
-                                # if type(elt1) != elt2:
-                                #     return False
-                                if (elt2 == float):
-                                    if (type(converted_val) not in [float, int]):
-                                        print("floaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat")
-                                        print(elt2)
-                                        print(type(converted_val), converted_val, type(converted_val) not in [float, int])
-                                        return False
-                                else:
-                                    if(type(converted_val) != elt2):
-                                        # print("adfdsfdfdqfsdqfdsqfsdfsqfsf")
-                                        # print(converted_val)
-                                        # print(elt2)
-                                        #pb quand c'est 0 ca compte comme int et non float 
-                                        print("normalllllllllllllllllllllllllllllllllll")
-                                        print(converted_val, type(converted_val))
-                                        print(elt2)
-                                        return False
+                            if (self.testCompare(t[1], d[1]) == False):
+                                return False
                     
         print("Truuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuue")
         return True
