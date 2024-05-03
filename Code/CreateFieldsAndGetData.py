@@ -30,6 +30,8 @@ class XmlEditorGUI(QMainWindow):
         self.saveButton = QPushButton()
         self.mainLayout = QVBoxLayout()
         
+        self.count = 0
+        
         self.countTable = 0
         
         #TEST D'AJOUT DES CHAMPS
@@ -60,6 +62,7 @@ class XmlEditorGUI(QMainWindow):
         #saveButton.clicked.connect(self.saveDataXml)
         saveButton.clicked.connect(self.extraireDonneesEtTypes)
         saveButton.setToolTip('Sauvegarder le fichier XML')
+        saveButton.setObjectName("Save")
 
         # Layouts
         self.mainLayout = QVBoxLayout()
@@ -94,7 +97,10 @@ class XmlEditorGUI(QMainWindow):
                 self.specification_xml_structure = specif
                 data_empty = self.specification_xml_structure.createData()
                 self.fields = self.specification_xml_structure.convert2Field(data_empty.content)
+                if self.count > 0 :
+                    self.deleteLayout()
                 self.addFields()
+                self.count += 1
             else:
                 QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
         else:
@@ -123,6 +129,27 @@ class XmlEditorGUI(QMainWindow):
             QMessageBox.information(self, 'Succès', 'Fichier de données XML enregistré avec succès!')
         else:
             QMessageBox.warning(self, 'Erreur', 'Le fichier de données XML contient des erreurs.')
+    
+    def deleteLayout(self):
+        
+        for button in self.findChildren(QPushButton):
+            if button.objectName() != "Save" :
+                button.setParent(None)
+        
+        for label in self.findChildren(QLabel):
+            label.setParent(None)
+        
+        for edit in self.findChildren(QLineEdit):
+            edit.setParent(None)
+    
+        for combobox in self.findChildren(QComboBox):
+
+            combobox.setParent(None)
+        
+        for tablewidget in self.findChildren(QTableWidget):
+            
+            tablewidget.setParent(None)
+        
     
     def addFields(self):
         
@@ -332,7 +359,7 @@ class XmlEditorGUI(QMainWindow):
                 table.append(data)
             donnees_et_types[tablewidget.objectName().split()[0]] = (table, 'el')
     
-        print(donnees_et_types)
+        print(len(donnees_et_types))
         
 
 if __name__ == "__main__":
