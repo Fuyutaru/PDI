@@ -60,11 +60,14 @@ class XmlManager(Strategy):
                 if len(specElement) == 0 and specElement.tag != "el":  # Vérifier si c'est une balise finale (pas d'enfants)
                     obj_name = specElement.tag
                     obj_type = [Type for Type in specElement.text.split(" ")]
-                    obj_path = specElement.getroottree().getpath(specElement)[5:]
+                    obj_path = specElement.getroottree().getpath(specElement)[1:]
                     
-                    dataElement = dataTree.find(obj_path)
+                    dataElement = dataTree.find(obj_path[4:])
                     
-                    obj_value = [val for val in dataElement.text.split(" ")]
+                    if dataElement.text == None :
+                        obj_value = None
+                    else :
+                        obj_value = [val for val in dataElement.text.split(" ")]
                     
                     # Créer l'objet et l'ajouter à la liste
                     field = Field(obj_name, obj_type, obj_path, obj_value)
@@ -74,11 +77,14 @@ class XmlManager(Strategy):
                     
                     obj_name = specElement.tag
                     obj_type = [Type for Type in specElement.text.split(" ")]
-                    obj_path = specElement.getroottree().getpath(specElement)[5:]
+                    obj_path = specElement.getroottree().getpath(specElement)[1:]
                     
-                    for elElement in dataTree.findall(obj_path):
+                    for elElement in dataTree.findall(obj_path[4:]):
                         if isinstance(elElement.tag, str) :
-                            obj_value = [val for val in elElement.text.split(" ")]
+                            if dataElement.text == None :
+                                obj_value = None
+                            else :
+                                obj_value = [val for val in dataElement.text.split(" ")]
                             
                             field = Field(obj_name, obj_type, obj_path, obj_value)
                             field_list.append(field)
@@ -87,18 +93,21 @@ class XmlManager(Strategy):
                     
                     # Récupérer les types associés aux enfants de specElement
                     types = {child.tag: child.text for child in specElement}
-                    obj_path = specElement.getroottree().getpath(specElement)[5:]
+                    obj_path = specElement.getroottree().getpath(specElement)[1:]
                     
                     # Parcourir les éléments correspondants dans le fichier de données
-                    for elElement in dataTree.findall(obj_path):
+                    for elElement in dataTree.findall(obj_path[5:]):
                         
                         if isinstance(elElement.tag, str) :
                             
                             for child in elElement:
                                 if isinstance(child.tag, str) :
                                     obj_name = child.tag
-                                    obj_path = elElement.getroottree().getpath(elElement)
-                                    obj_value = [val for val in child.text.split(" ")]
+                                    obj_path = elElement.getroottree().getpath(child)[1:]
+                                    if dataElement.text == None :
+                                        obj_value = None
+                                    else :
+                                        obj_value = [val for val in dataElement.text.split(" ")]
                                     obj_type = [Type for Type in types[obj_name].split(" ")]
                                     
                                     field = Field(obj_name, obj_type, obj_path, obj_value)
