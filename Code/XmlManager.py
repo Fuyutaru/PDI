@@ -201,7 +201,7 @@ class XmlManager(Strategy):
             return False
 
 
-        # print("dsfqs", list_d)
+        print("dsfqs", list_d)
         # print(list_t)
         
         for d in list_d:
