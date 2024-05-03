@@ -182,6 +182,7 @@ class XmlEditorGUI(QMainWindow):
         listFieldTable = []
         n = len(self.fields)
         for i in range(n):
+            print(self.fields[i].name, self.fields[i].path)
             typeField = self.fields[i].type
             pathField = self.fields[i].path
             pathFieldSplit = self.fields[i].path.split("/")
@@ -350,17 +351,17 @@ class XmlEditorGUI(QMainWindow):
         
     def extraireDonneesEtTypes(self): 
         """parcourt les diff widget de l'espace, on stock dans un dico le nom le widget et le type, retrouve tt les widget enfant de type QCheckBox"""
-        donnees_et_types = {}
+        self.donnees_et_types = {}
         for edit in self.findChildren(QLineEdit):
             infos = edit.objectName().split()
-            if infos[0] in donnees_et_types :
-                donnees_et_types[infos[0]] = ( donnees_et_types[infos[0]][0]+ " " + edit.text(),  donnees_et_types[infos[0]][1] + " " + infos[1])
+            if infos[0] in self.donnees_et_types :
+                self.donnees_et_types[infos[0]] = ( self.donnees_et_types[infos[0]][0]+ " " + edit.text(),  self.donnees_et_types[infos[0]][1] + " " + infos[1])
             else :
-                donnees_et_types[infos[0]] = (edit.text(), infos[1])
+                self.donnees_et_types[infos[0]] = (edit.text(), infos[1])
     
         for combobox in self.findChildren(QComboBox):
             infos = combobox.objectName().split()
-            donnees_et_types[infos[0]] = (combobox.currentText(), infos[1])
+            self.donnees_et_types[infos[0]] = (combobox.currentText(), infos[1])
 
         
         for tablewidget in self.findChildren(QTableWidget):
@@ -373,8 +374,9 @@ class XmlEditorGUI(QMainWindow):
                     nameColumn = header2[0]
                     typeColumn = header2[1][1:-1]
                     headers.append((nameColumn,typeColumn))
+                else :
+                    headers.append(header[1:-1])
             table.append(headers)
-            self.data_xml_structure
                 
             for row in range(tablewidget.rowCount()):
                 data = []
@@ -383,11 +385,49 @@ class XmlEditorGUI(QMainWindow):
                     text = it.text() if it is not None else ""
                     data.append(text)
                 table.append(data)
-            donnees_et_types[tablewidget.objectName().split()[0]] = (table, 'el')
+            self.donnees_et_types[tablewidget.objectName().split()[0]] = (table, 'el')
     
-        print(len(donnees_et_types))
+        print(self.donnees_et_types)
+        self.getDataAsField()
         
-    
+        
+    def getDataAsField(self): 
+        self.dataAsField = []
+        
+        for path in self.donnees_et_types :
+            if self.donnees_et_types[path][1] == "el" :
+                table = self.donnees_et_types[path][0]
+                if type(table[0][0]) == tuple :
+                    print("tableau de champs")
+                    
+                else :
+                    print("tableau")
+            else :
+                field = Field(path.split("/")[-1],self.donnees_et_types[path][1], path, self.donnees_et_types[path][0] )
+                self.dataAsField.append(field)
+                #print(field.name, field.type, field.path, field.value)
+        
+        
+    # def setDataInField(self):
+    #     list_t, list_d, a, b = self.data_xml_structure.strat.iterate(self.specification_xml_structure, self.data_xml_structure)
+        
+        
+    #     for data in list_d:
+    #         for field in self.fields:
+    #             if data[0] == ('Root' + field.path): #ATTENTION ROOT!!!
+    #                 if "el" in data[0]:
+    #                     if field.value == ['']:
+    #                         field.value = data[1]
+    #                     else:
+    #                         i = self.fields.index(field)
+    #                         new_field = Field(field.name, field.type, field.path, data[1])
+    #                         self.fields.insert(i+1, new_field)
+                            
+    #                 else:
+    #                     if isinstance(data[1],list):
+    #                         field.value = data[1]
+    #                     else:
+    #                         field.value = [data[1]]
         
 
 if __name__ == "__main__":
