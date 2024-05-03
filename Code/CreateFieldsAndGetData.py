@@ -16,7 +16,7 @@ from DataType import DataType
 from XmlManager import XmlManager
 import data_handling as dh
 import FileLoader
-import Enumeration
+from Enumeration import enum
 from Field import Field
 
 class XmlEditorGUI(QMainWindow):
@@ -158,10 +158,10 @@ class XmlEditorGUI(QMainWindow):
                 multiTypeLayout.addWidget(name)
                 count = 1
                 for t in typeField :
-                    if t in Enumeration.enumDict :
+                    if t in enum.enumDict :
                         enumComboBox = QComboBox()
-                        enumComboBox.addItems(Enumeration.enumDict[t])
-                        enumComboBox.setObjectName(pathField + "/" + str(count) + " " + t)
+                        enumComboBox.addItems(enum.enumDict[t])
+                        enumComboBox.setObjectName(pathField +  " " + t)
                         enumLayout = QHBoxLayout()
                         enumLayout.addWidget(enumComboBox)
                         typeEnum = QLabel("(" + t + ")")
@@ -171,7 +171,7 @@ class XmlEditorGUI(QMainWindow):
                     else :
                         fieldLayout = QHBoxLayout()
                         field = QLineEdit()
-                        field.setObjectName(pathField + "/" + str(count) + " " + t)
+                        field.setObjectName(pathField + " " + t)
                         fieldLayout.addWidget(field)
                         typeField = QLabel("(" + t + ")")
                         fieldLayout.addWidget(typeField)
@@ -183,9 +183,9 @@ class XmlEditorGUI(QMainWindow):
                         
                         
             
-            elif typeField[0] in Enumeration.enumDict :
+            elif typeField[0] in enum.enumDict :
                 enumComboBox = QComboBox()
-                enumComboBox.addItems(Enumeration.enumDict[typeField[0]])
+                enumComboBox.addItems(enum.enumDict[typeField[0]])
                 enumComboBox.setObjectName(pathField + " " + typeField[0])
                 enumLayout = QHBoxLayout()
                 nom = QLabel(pathFieldSplit[-1])
@@ -301,7 +301,10 @@ class XmlEditorGUI(QMainWindow):
         donnees_et_types = {}
         for edit in self.findChildren(QLineEdit):
             infos = edit.objectName().split()
-            donnees_et_types[infos[0]] = (edit.text(), infos[1])
+            if infos[0] in donnees_et_types :
+                donnees_et_types[infos[0]] = ( donnees_et_types[infos[0]][0]+ " " + edit.text(),  donnees_et_types[infos[0]][1] + " " + infos[1])
+            else :
+                donnees_et_types[infos[0]] = (edit.text(), infos[1])
     
         for combobox in self.findChildren(QComboBox):
             infos = combobox.objectName().split()
@@ -337,8 +340,8 @@ if __name__ == "__main__":
     
     # Test your XML class
     xmlStrat = XmlManager()
-    xml = DataType("specification", xmlStrat,"example/FullSpecif.xml")
-    Dataxml = DataType("specification", xmlStrat,"example/Data_FullSpecif.xml")
+    xml = DataType(xmlStrat,"example/FullSpecif.xml")
+    Dataxml = DataType( xmlStrat,"example/Data_FullSpecif.xml")
     xml.readFile()
     Dataxml.readFile()
     
