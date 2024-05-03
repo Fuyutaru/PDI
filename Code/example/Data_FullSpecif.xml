@@ -6,7 +6,7 @@
       <FullSpecifTarget>
          <BitEncoding>
             <Specifs>
-               <hihi></hihi>
+               <hihi>True</hihi>
                <hoho>False</hoho>
                <coco>0 True False</coco>
                <toto>"CERN" "IGNIndoor"</toto>

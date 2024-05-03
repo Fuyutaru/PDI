@@ -127,8 +127,11 @@ class XmlEditorGUI(QMainWindow):
                     data = DataType(strat, self.data_xml_path)
                     data.readFile()
                     self.data_xml_structure = data
-                    self.setDataInField()
-                    print(self.fields[4].value)
+                    # data_empty = self.data_xml_structure.createData()
+                    self.fields = self.specification_xml_structure.convert2Field(data.content)
+                    
+                    # print(self.fields[4].type)
+                    # print(self.fields[4].value)
                     
                     QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
                 else:
@@ -384,61 +387,42 @@ class XmlEditorGUI(QMainWindow):
     
         print(len(donnees_et_types))
         
-    def setDataInField(self):
-        list_t, list_d, a, b = self.data_xml_structure.strat.iterate(self.specification_xml_structure, self.data_xml_structure)
-        
-        
-        for data in list_d:
-            for field in self.fields:
-                if data[0] == ('Root' + field.path): #ATTENTION ROOT!!!
-                    if "el" in data[0]:
-                        if field.value == ['']:
-                            field.value = data[1]
-                        else:
-                            i = self.fields.index(field)
-                            new_field = Field(field.name, field.type, field.path, data[1])
-                            self.fields.insert(i+1, new_field)
-                            
-                    else:
-                        if isinstance(data[1],list):
-                            field.value = data[1]
-                        else:
-                            field.value = [data[1]]
+    
         
 
 if __name__ == "__main__":
     
-    # Test your XML class
-    xmlStrat = XmlManager()
-    xml = DataType(xmlStrat,"example/FullSpecif.xml")
-    Dataxml = DataType( xmlStrat,"example/Data_FullSpecif.xml")
-    xml.readFile()
-    Dataxml.readFile()
+    # # Test your XML class
+    # xmlStrat = XmlManager()
+    # xml = DataType(xmlStrat,"example/FullSpecif.xml")
+    # Dataxml = DataType( xmlStrat,"example/Data_FullSpecif.xml")
+    # xml.readFile()
+    # Dataxml.readFile()
     
-    # for el in Dataxml.content.iter() :
-    #     print(el.getroottree().getpath(el))
-    data_empty = xml.createData()
-    # data_empty.convert2File()
+    # # for el in Dataxml.content.iter() :
+    # #     print(el.getroottree().getpath(el))
+    # data_empty = xml.createData()
+    # # data_empty.convert2File()
 
-    field_list = xml.convert2Field(data_empty.content)
+    # field_list = xml.convert2Field(data_empty.content)
 
     
     
     
-    field1 = Field("Number", ["int"], ".../Number","")
-    field2 = Field("Id", ["int"], ".../Id","")
-    field3 = Field("Name", ["string", "string"],".../Name","")
-    field4 = Field("Number", ["int"], "haha/el/Number","")
-    field5 = Field("Id", ["int"], "haha/el/Id","")
-    field6 = Field("Name", ["string"], "haha/el/Name","")
-    field8 = Field("Number", ["int"], "héhé/el/Number","")
-    field9 = Field("Id", ["int"], "héhé/el/Id","")
-    field10 = Field("Arg", ["string"],".../Arg","")
-    field11 = Field("AAAARRRRGG", ["Float","Float"],"hoho/el","")
-    field12 = Field("Truc", ["string", "enum_SysCoGeo"],".../Truc","")
+    # field1 = Field("Number", ["int"], ".../Number","")
+    # field2 = Field("Id", ["int"], ".../Id","")
+    # field3 = Field("Name", ["string", "string"],".../Name","")
+    # field4 = Field("Number", ["int"], "haha/el/Number","")
+    # field5 = Field("Id", ["int"], "haha/el/Id","")
+    # field6 = Field("Name", ["string"], "haha/el/Name","")
+    # field8 = Field("Number", ["int"], "héhé/el/Number","")
+    # field9 = Field("Id", ["int"], "héhé/el/Id","")
+    # field10 = Field("Arg", ["string"],".../Arg","")
+    # field11 = Field("AAAARRRRGG", ["Float","Float"],"hoho/el","")
+    # field12 = Field("Truc", ["string", "enum_SysCoGeo"],".../Truc","")
     
-    field7 = Field("SystemeDeCoordonnées", ["enum_SysCoGeo"], "num/nim/SystemeDeCoordonnées","")
-    fields= [field1, field2,field3, field7, field4, field5, field6, field8, field9, field10, field12, field11]
+    # field7 = Field("SystemeDeCoordonnées", ["enum_SysCoGeo"], "num/nim/SystemeDeCoordonnées","")
+    # fields= [field1, field2,field3, field7, field4, field5, field6, field8, field9, field10, field12, field11]
     
     app = QApplication(sys.argv)
     gui = XmlEditorGUI()
