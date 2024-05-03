@@ -27,4 +27,7 @@ class DataType():
     
     def compare(self, typeTree, dataTree):
         return self.strat.compare(typeTree, dataTree)
+    
+    def updateData(self, fieldList) :
+        self.content = self.strat.updateData(self.content, fieldList)
 

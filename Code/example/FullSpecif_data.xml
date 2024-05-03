@@ -2,7 +2,11 @@
 <Root>
    <Type>"MMVII_Serialization"</Type>
    <Version>"0.0.0"</Version>
-   <Data><FullSpecifTarget><BitEncoding><Specifs><Type></Type>
+   <Data><FullSpecifTarget><BitEncoding><Specifs><hihi></hihi>
+               <hoho></hoho>
+               <coco></coco>
+               <toto></toto>
+               <Type></Type>
                <NbBits></NbBits>
                <FreqCircEq></FreqCircEq>
                <MinHammingD></MinHammingD>
