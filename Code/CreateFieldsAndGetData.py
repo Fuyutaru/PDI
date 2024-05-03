@@ -156,9 +156,9 @@ class XmlEditorGUI(QMainWindow):
                 name = QLabel(pathFieldSplit[-1])
                 multiTypeLayout = QHBoxLayout()
                 multiTypeLayout.addWidget(name)
-                count = 1
                 for t in typeField :
-                    if t in enum.enumDict :
+                    if t.strip('"') in enum.enumDict :
+                        t = t.strip('"')
                         enumComboBox = QComboBox()
                         enumComboBox.addItems(enum.enumDict[t])
                         enumComboBox.setObjectName(pathField +  " " + t)
@@ -167,7 +167,6 @@ class XmlEditorGUI(QMainWindow):
                         typeEnum = QLabel("(" + t + ")")
                         enumLayout.addWidget(typeEnum)
                         multiTypeLayout.addLayout(enumLayout)
-                        count+=1
                     else :
                         fieldLayout = QHBoxLayout()
                         field = QLineEdit()
@@ -175,7 +174,6 @@ class XmlEditorGUI(QMainWindow):
                         fieldLayout.addWidget(field)
                         typeField = QLabel("(" + t + ")")
                         fieldLayout.addWidget(typeField)
-                        count+=1
                         multiTypeLayout.addLayout(fieldLayout)
                         
                 self.mainLayout.addLayout(multiTypeLayout)
@@ -183,15 +181,16 @@ class XmlEditorGUI(QMainWindow):
                         
                         
             
-            elif typeField[0] in enum.enumDict :
+            elif typeField[0].strip('"') in enum.enumDict :
+                t = typeField[0].strip('"')
                 enumComboBox = QComboBox()
-                enumComboBox.addItems(enum.enumDict[typeField[0]])
-                enumComboBox.setObjectName(pathField + " " + typeField[0])
+                enumComboBox.addItems(enum.enumDict[t])
+                enumComboBox.setObjectName(pathField + " " + t)
                 enumLayout = QHBoxLayout()
                 nom = QLabel(pathFieldSplit[-1])
                 enumLayout.addWidget(nom)
                 enumLayout.addWidget(enumComboBox)
-                typeEnum = QLabel("(" + typeField[0] + ")")
+                typeEnum = QLabel("(" + t + ")")
                 enumLayout.addWidget(typeEnum)
                 self.mainLayout.addLayout(enumLayout)
             
