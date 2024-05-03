@@ -30,6 +30,7 @@ class XmlEditorGUI(QMainWindow):
         self.data_xml_structure = None
         self.saveButton = QPushButton()
         self.mainLayout = QVBoxLayout()
+        self.fields = None
         
         self.count = 0
         
@@ -126,6 +127,9 @@ class XmlEditorGUI(QMainWindow):
                     data = DataType(strat, self.data_xml_path)
                     data.readFile()
                     self.data_xml_structure = data
+                    self.setDataInField()
+                    print(self.fields[4].value)
+                    
                     QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
                 else:
                     QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
@@ -381,12 +385,12 @@ class XmlEditorGUI(QMainWindow):
         print(len(donnees_et_types))
         
     def setDataInField(self):
-        list_t, list_d = self.data_xml_path.strat.iterate(self.specification_xml_structure, self.data_xml_structure)
+        list_t, list_d, a, b = self.data_xml_structure.strat.iterate(self.specification_xml_structure, self.data_xml_structure)
         
         
         for data in list_d:
             for field in self.fields:
-                if data[0] == field.path:
+                if data[0] == ('Root' + field.path): #ATTENTION ROOT!!!
                     if "el" in data[0]:
                         if field.value == ['']:
                             field.value = data[1]
