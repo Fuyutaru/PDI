@@ -20,20 +20,19 @@ from Enumeration import enum
 from Field import Field
 
 class XmlEditorGUI(QMainWindow):
-    def __init__(self, fields): #Champs sera a retirer quand on aura la conversion
+    def __init__(self): #Champs sera a retirer quand on aura la conversion
                                 #des fichiers XML en liste de champs
         super().__init__()
         self.specification_xml_path = None
         self.data_xml_path = None
         self.specification_xml_structure = None
+        self.data_xml_structure = None
         self.saveButton = QPushButton()
         self.mainLayout = QVBoxLayout()
         
         self.countTable = 0
         
         #TEST D'AJOUT DES CHAMPS
-        
-        self.fields = fields
    
     
 
@@ -56,10 +55,6 @@ class XmlEditorGUI(QMainWindow):
         loadDataAction.triggered.connect(self.loadDataXml)
         fileMenu.addAction(loadDataAction)
 
-        # # Text Editor
-        # self.textEdit = QTextEdit(self)
-        # self.textEdit.setStyleSheet("QTextEdit {border: 1px solid black; background-color: #f0f0f0;}")
-
         # Buttons
         saveButton = QPushButton(QIcon('./icon.png'), 'Sauvegarder', self)
         #saveButton.clicked.connect(self.saveDataXml)
@@ -70,11 +65,6 @@ class XmlEditorGUI(QMainWindow):
         self.mainLayout = QVBoxLayout()
         # self.mainLayout.addWidget(self.textEdit)
         
-        ####TEST CHAMPS####
-        self.bouton = QPushButton("Ajouter champs")
-        self.bouton.clicked.connect(self.addFields)
-        self.mainLayout.addWidget(self.bouton)
-        ####TEST CHAMPS####
 
         buttonsLayout = QHBoxLayout()
         buttonsLayout.addWidget(saveButton)
@@ -91,12 +81,22 @@ class XmlEditorGUI(QMainWindow):
         
             
     def loadSpecificationXml(self):
+        #met la fct de tchek/verif la direct
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de spécification XML', '', 'XML files (*.xml)')
         if path:
             self.specification_xml_path = path
             tree = ET.parse(self.specification_xml_path)
-            self.specification_xml_structure = dh.analyzeSpecification(tree)
-            QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+            strat = XmlManager()
+            # self.specification_xml_structure = dh.analyzeSpecification(tree)
+            if (strat.verif(tree) == True):
+                specif = DataType(strat, self.specification_xml_path)
+                specif.readFile()
+                self.specification_xml_structure = specif
+                data_empty = self.specification_xml_structure.createData()
+                self.fields = self.specification_xml_structure.convert2Field(data_empty.content)
+                self.addFields()
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
         else:
             QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
 
@@ -370,6 +370,6 @@ if __name__ == "__main__":
     fields= [field1, field2,field3, field7, field4, field5, field6, field8, field9, field10, field12, field11]
     
     app = QApplication(sys.argv)
-    gui = XmlEditorGUI(field_list)
+    gui = XmlEditorGUI()
     gui.show()
     sys.exit(app.exec_())
