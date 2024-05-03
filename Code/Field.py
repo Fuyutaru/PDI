@@ -7,10 +7,10 @@ class Field():
         self._value = value
 
     @property
-    def valeur(self):
-        return self._valeur
+    def value(self):
+        return self._value
     
-    @valeur.setter
-    def valeur(self, new_value):
-        if new_value != self._valeur:
-            self._valeur = new_value
+    @value.setter
+    def value(self, new_value):
+        if new_value != self._value:
+            self._value = new_value

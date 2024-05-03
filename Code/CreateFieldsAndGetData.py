@@ -107,12 +107,30 @@ class XmlEditorGUI(QMainWindow):
             QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
 
     def loadDataXml(self):
-        path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
-        if path:
-            self.data_xml_path = path
-            self.loader = FileLoader(path)
-            self.loader.fileLoaded.connect(self.onFileLoaded)
-            self.loader.start()
+        if self.specification_xml_structure == None :
+            QMessageBox.warning(self, 'Erreur', 'Un fichier de spécification doit être chargé avant de charger un fichier de données')
+        else :
+            path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
+            if path:
+                self.data_xml_path = path
+                
+                # self.loader = FileLoader(path)
+                # self.loader.fileLoaded.connect(self.onFileLoaded)
+                # self.loader.start()
+                
+                tree = ET.parse(self.data_xml_path)
+                strat = XmlManager()
+            
+                if (strat.verif(tree) == True):
+                    data = DataType(strat, self.data_xml_path)
+                    data.readFile()
+                    self.data_xml_structure = data
+                    QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+                else:
+                    QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+            
 
     def onFileLoaded(self, data):
         self.textEdit.setText(data)
