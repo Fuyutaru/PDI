@@ -18,6 +18,7 @@ import data_handling as dh
 import FileLoader
 from Enumeration import enum
 from Field import Field
+from XmlManager import XmlManager
 
 class XmlEditorGUI(QMainWindow):
     def __init__(self): #Champs sera a retirer quand on aura la conversion
@@ -321,7 +322,7 @@ class XmlEditorGUI(QMainWindow):
                     typeColumn = header2[1][1:-1]
                     headers.append((nameColumn,typeColumn))
             table.append(headers)
-            
+            self.data_xml_structure
                 
             for row in range(tablewidget.rowCount()):
                 data = []
@@ -333,6 +334,27 @@ class XmlEditorGUI(QMainWindow):
             donnees_et_types[tablewidget.objectName().split()[0]] = (table, 'el')
     
         print(donnees_et_types)
+        
+    def setDataInField(self):
+        list_t, list_d = self.data_xml_path.strat.iterate(self.specification_xml_structure, self.data_xml_structure)
+        
+        
+        for data in list_d:
+            for field in self.fields:
+                if data[0] == field.path:
+                    if "el" in data[0]:
+                        if field.value == ['']:
+                            field.value = data[1]
+                        else:
+                            i = self.fields.index(field)
+                            new_field = Field(field.name, field.type, field.path, data[1])
+                            self.fields.insert(i+1, new_field)
+                            
+                    else:
+                        if isinstance(data[1],list):
+                            field.value = data[1]
+                        else:
+                            field.value = [data[1]]
         
 
 if __name__ == "__main__":

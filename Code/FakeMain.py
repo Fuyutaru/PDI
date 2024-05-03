@@ -11,8 +11,10 @@ from PyQt5.QtGui import QIcon,  QStandardItemModel, QStandardItem
 import sys
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    Gui = XmlEditorGUI()
-    Gui.show()  
-    sys.exit(app.exec_())
-    
+    # app = QApplication(sys.argv)
+    # Gui = XmlEditorGUI()
+    # Gui.show()  
+    # sys.exit(app.exec_())
+    l = [1,2,3,4,5]
+    l.insert(2, 6)
+    print(l)
