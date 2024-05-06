@@ -10,11 +10,15 @@ class Strategy(ABC):
         pass
     
     @abstractmethod
-    def convert2File(self,tree,filename):
+    def convert2File(self):
         pass
     
     @abstractmethod
-    def convert2Field(self, tree):
+    def convert2Field(self):
+        pass
+    
+    @abstractmethod
+    def createData(self):
         pass
     
     @abstractmethod
