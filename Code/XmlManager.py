@@ -1,12 +1,10 @@
 import lxml.etree as etree
-import xml.etree.ElementTree as ET
 from Strategy import Strategy
 import re
 from Field import Field
 import copy
 from DataType import DataType
 from dico import Dico
-from collections import OrderedDict
 from Enumeration import enum
 
 class XmlManager(Strategy):
@@ -15,10 +13,28 @@ class XmlManager(Strategy):
         pass
     
     def readFile(self, filename):
+        """
+        Function used to create an ElementTree from the path of the XML file.
+
+        Args:
+            filename (str): path of the XML file
+
+        Returns:
+            etree: tree generated from the XML file
+        """
         tree = etree.parse(filename)
         return tree
     
     def verif(self, tree):
+        """
+        Function used to verify that the XML file header is correct.
+
+        Args:
+            tree (etree): tree that needs to be verified
+
+        Returns:
+            _bool_: True if correct | False if incorrect
+        """
         root = tree.getroot()
         version_elem = root.find('Version')
         data_elem = root.find('Data')
@@ -28,17 +44,14 @@ class XmlManager(Strategy):
         if version_elem is None or data_elem is None or type_elem is None:
             return False
         
-        # Check version format
         version_format = re.compile(r'"(\d+(\.\d+){2})"')
         version = version_elem.text.strip()
         if not version_format.match(version):
             return False
-        
-        # Check type
+
         if type_elem.text.strip() != '"MMVII_Serialization"':
             return False
         
-        # All verifications passed
         return True
     
     def convert2File(self, tree, filename):
@@ -134,16 +147,33 @@ class XmlManager(Strategy):
         
     
     def get_node_path(self, node):
+        """
+        Function used to get the path of a node in an etree.
+
+        Args:
+            node (etree): node of the etree
+
+        Returns:
+            str: path of the node
+        """
         path = []
         while node is not None:
             if isinstance(node.tag, str):
-                # print(node.tag)
-                path.insert(0, node.tag)  # Insert the tag at the beginning of the path list
+                path.insert(0, node.tag)
             node = node.getparent()
-        # print(path)
         return '/'.join(path)
     
     def convert_to_appropriate_type(self, value):
+        """
+        Function used to convert the type of the element in a string to
+        its appropriate type.
+
+        Args:
+            value (str): the string that will be converted
+
+        Returns:
+            any: the real type of the element in the string
+        """
         try:
             return int(value)
         except ValueError:
@@ -154,84 +184,65 @@ class XmlManager(Strategy):
             
     
     def testCompare(self, datatype, data):
+        """
+        Function used to compare data against a given data type.
+
+        Args:
+            datatype (str or type): The data type against which data will be compared.
+            data (str or int or float or bool): The data to be compared.
+
+        Returns:
+            bool: True if the data matches the specified data type, False otherwise.
+        """
         elt2 = datatype
         elt1 = data
 
         if (elt2 == "boolean"):
-            # print("boooooooooooooooooooooooooooooooool")
             if not (elt1 in ('0', '1', 'True', 'False')):
-                # print(elt1)
-                print("boooooooooooooooooooooooooooooooool")
-                print(elt1)
                 return False
         elif (elt2 in enum.enumName):
-            # print("j'suis un enuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuum")
             value = enum.enumDict.get(elt2)
-            # print(value)
-            # print(elt2)
             if elt1 not in value:
-                print("enuuuuuuuuuuuuuuuuuuuuuuuum")
-                print(elt1)
                 return False
         else:
             converted_val = self.convert_to_appropriate_type(elt1)
-            # print("type", elt2)
-            # print("val", type(elt1))
-            # if type(elt1) != elt2:
-            #     return False
             if (elt2 == float):
                 if (type(converted_val) not in [float, int]):
-                    print("floaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat")
-                    print(elt2)
-                    print(type(converted_val), converted_val, type(converted_val) not in [float, int])
                     return False
             else:
                 if (type(converted_val) != elt2):
-                    # print("adfdsfdfdqfsdqfdsqfsdfsqfsf")
-                    # print(converted_val)
-                    # print(elt2)
-                    #pb quand c'est 0 ca compte comme int et non float 
-                    print("normalllllllllllllllllllllllllllllllllll")
-                    print(converted_val, type(converted_val))
-                    print(elt2)
                     return False
             
     
     
     
     def compare(self, type_data, data):
-        # type_elements = OrderedDict((element.tag, element_type) for element in r.iter() for element_type in [Dico.content.get(element.text, str)])
-        # type_elements = OrderedDict()
+        """
+        Compares the structure and content of data against a given data type.
 
-        list_t, list_d, paths_t, paths_d = self.iterate(type_data, data)
+        Args:
+            type_data (DataType): the data structure which contains the data of an XML file
+            data (DataType): the type structure which contains the specified type of an XML file
+
+        Returns:
+            bool: True if the structure and content of data match the specified data type, False otherwise.
+        """
         
+        list_t, list_d, paths_t, paths_d = self.iterate(type_data, data)
         
         if paths_d != paths_t:
             return False
-
-
-        print("dsfqs", list_d)
-        # print(list_t)
         
         for d in list_d:
-            # print(d)
             for t in list_t:
-                # print(t)
                 if d[0] == t[0]:
-                    # print("meme cheminnnnnnnnnnnnnnnnnnnnnnnnnnnn")
                     if d[1] != '':
-                    
                         if isinstance(t[1], list) and isinstance(d[1], list):
-                            # print("j'suis une listeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-                            # print(t[1], "sfhijsqhofhdsfsqifhqifhdsqjfsqijsdfqjs")
                             if len(t[1]) != len(d[1]):
                                 return False
                             
-                            
-                            # on parcours les listes dans le cas où on a plusieurs type de suite
+                            # We iterate through the lists in case we have multiple types in a row.
                             for elt1, elt2 in zip(d[1], t[1]):
-                                # print("j'suis dans le zippppppppppppppppppp")
-
                                 if (self.testCompare(elt2, elt1) == False):
                                     return False
                         
@@ -239,21 +250,29 @@ class XmlManager(Strategy):
                             return False
 
                         elif (not isinstance(t[1], list) and not isinstance(d[1], list)):
-                            #l'autre cas
-                            print("casssssssssssssssssssssssssssssss normal")
-                            print("type",t[1])
-                            print("val", d[1])
                             elt1 = d[1]
                             elt2 = t[1]
                             if (self.testCompare(elt2, elt1) == False):
                                     return False
                     
-        print("Truuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuue")
         return True
-            
-        # return type_elements
+
     
     def iterate(self, type, data):
+        """
+        Function that iterates over the structure of the data type and the data content, extracting paths and values.
+
+        Args:
+            type (DataType): the data structure which contains the data of an XML file
+            data (DataType): the type structure which contains the specified type of an XML file
+
+        Returns:
+            tuple: A tuple containing four lists:
+                - list_t (list): A list of tuples representing the structure of the data type. Each tuple contains the path of the data and its type.
+                - list_d (list): A list of tuples representing the content of the data. Each tuple contains the path of the data and its value.
+                - paths_t (list): A list of paths extracted from the structure of the data type.
+                - paths_d (list): A list of paths extracted from the content of the data.
+        """
         # Get the root elements of both XML files
         root_t = type.content.getroot()
         root_d = data.content.getroot()

@@ -126,14 +126,18 @@ class XmlEditorGUI(QMainWindow):
                 if (strat.verif(tree) == True):
                     data = DataType(strat, self.data_xml_path)
                     data.readFile()
-                    self.data_xml_structure = data
-                    # data_empty = self.data_xml_structure.createData()
-                    self.fields = self.specification_xml_structure.convert2Field(data.content)
+                    if (data.compare(self.specification_xml_structure, data) == True):
+                        self.data_xml_structure = data
+                        # data_empty = self.data_xml_structure.createData()
+                        self.fields = self.specification_xml_structure.convert2Field(data.content)
                     
-                    # print(self.fields[4].type)
-                    # print(self.fields[4].value)
+                        # print(self.fields[4].type)
+                        # print(self.fields[4].value)
                     
-                    QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+                        QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+                    else:
+                        QMessageBox.information(self, 'Erreur', 'Le fichier de données ne correspond pas au fichier de spécification!')
+                    
                 else:
                     QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
             else:
