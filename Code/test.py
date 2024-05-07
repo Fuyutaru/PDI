@@ -26,21 +26,24 @@ if __name__ == "__main__":
     # Test your XML class
     xmlStrat = XmlManager()
     xml = DataType(xmlStrat,"example/FullSpecif.xml")
-    Dataxml = DataType(xmlStrat,"example/Data_FullSpecif - Copie.xml")
+    Dataxml_ini = DataType(xmlStrat,"example/Data_FullSpecif - Copie.xml")
     xml.readFile()
-    Dataxml.readFile()
+    Dataxml_ini.readFile()
+    
+    Dataxml_fin = DataType(xmlStrat,"example/Data_FullSpecif.xml")
+    Dataxml_fin.readFile()
     
     # for el in Dataxml.content.iter() :
     #     print(el.getroottree().getpath(el))
     data_empty = xml.createData()
     # data_empty.convert2File()
 
-    field_list = xml.convert2Field(Dataxml.content)
-    # for i in range (len(field_list)) :
-    #     print(field_list[i].name, field_list[i]._value)
+    field_list = xml.convert2Field(Dataxml_ini.content)
+    for i in range (len(field_list)) :
+        print(field_list[i].name, field_list[i]._value)
     print('############################')
-    data_empty.updateData(field_list)
-    # Dataxml.convert2File()
+    Dataxml_ini.updateData(field_list)
+    Dataxml_ini.convert2File()
     
     # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     # root = xml.content.getroot()
