@@ -36,14 +36,14 @@ if __name__ == "__main__":
     # for el in Dataxml.content.iter() :
     #     print(el.getroottree().getpath(el))
     data_empty = xml.createData()
-    # data_empty.convert2File()
+    data_empty.convert2File()
 
-    field_list = xml.convert2Field(Dataxml_ini.content)
-    for i in range (len(field_list)) :
-        print(field_list[i].name, field_list[i]._value)
-    print('############################')
-    Dataxml_ini.updateData(field_list)
-    Dataxml_ini.convert2File()
+    field_list = xml.convert2Field(Dataxml_fin.content)
+    # for i in range (len(field_list)) :
+    #     print(field_list[i].name, field_list[i].path)
+    
+    data_empty.updateData(field_list)
+    data_empty.convert2File()
     
     # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     # root = xml.content.getroot()

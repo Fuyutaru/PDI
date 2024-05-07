@@ -230,6 +230,7 @@ class XmlManager(Strategy):
         
         return list_t, list_d, paths_t, paths_d
 
+
     def convert2Field (self, specTree, dataTree) :
         # Liste pour stocker les objets créés
         field_list = []
@@ -298,6 +299,10 @@ class XmlManager(Strategy):
                                     if isinstance(child.tag, str) :
                                         obj_name = child.tag
                                         obj_path = child.getroottree().getpath(child)[1:]
+                                        
+                                        if '[' in obj_path :
+                                            obj_path = obj_path.split('[')[0] + obj_path.split(']')[1]
+                                            
                                         if child.text == None :
                                             obj_value = None
                                         else :
@@ -312,9 +317,7 @@ class XmlManager(Strategy):
         
     
     def updateData (self, dataTree, fieldList) :
-        
-        root_data_element = dataTree.find('Data')
-        
+       
         # Création du dictionnaire associant chaque chemin à une liste d'indices
         path_to_indices = {}
         
@@ -324,13 +327,11 @@ class XmlManager(Strategy):
             if path not in path_to_indices:
                 path_to_indices[path] = []  # Initialiser la liste vide pour ce chemin
             path_to_indices[path].append(index)  # Ajouter l'indice à la liste correspondante
-            
-        print(path_to_indices)
 
         for obj_path in path_to_indices :
             field0 = fieldList[path_to_indices[obj_path][0]]
     
-            if field0.name != 'el' and field0.path[:-len(field0.name)][-4:] != '/el/' and field0.path[:-len(field0.name)][-2] != ']' :
+            if field0.name != 'el' and obj_path[:-len(field0.name)][-4:] != '/el/' :
                 
                 new_value = field0._value
                 new_text = ''
@@ -338,13 +339,14 @@ class XmlManager(Strategy):
                     for value in new_value :
                         new_text = new_text + value + " "
                     new_text = new_text[:-1]
-                print(obj_path)
+                
                 dataTree.find(obj_path[4:]).text = new_text
                 
             elif field0.name == 'el' :
                 
                 elList = path_to_indices[obj_path]
                 elData = dataTree.findall(obj_path[4:])
+                NumberLeaves = len(elData)
                 i = 0
                 
                 for el in elData :
@@ -355,16 +357,16 @@ class XmlManager(Strategy):
                             for value in new_value :
                                 new_text = new_text + value + " "
                             new_text = new_text[:-1]
-                        print(obj_path)
+                        
                         el.text = new_text
                         i += 1
                 
-                Len_elData = len(elData)
-                if len(elList) > Len_elData :
+                
+                if len(elList) > NumberLeaves :
                     
                     existing_element = elData[-1]
-                    j = Len_elData
-                    for el in elList[Len_elData:] :
+                    j = NumberLeaves
+                    for el in elList[NumberLeaves:] :
                         new_leaf = etree.Element(existing_element.tag, attrib=existing_element.attrib)
                         
                         new_value = fieldList[elList[j]]._value
@@ -381,198 +383,48 @@ class XmlManager(Strategy):
                         parent_element.append(new_leaf)
             
             else :
-                parent_path, number = obj_path.split('[')
-                number = int(number.split(']')[0])
+                parent_path, childName = obj_path.split('/el/')
                 
-                elData = dataTree.findall(parent_path[4:])
-                FirstEl = True
-                for el in elData :
-                    iter_children = el.iter()
-                    next(iter_children)
-                    
-                    for child in iter_children :
-                        if isinstance(child.tag, str) :
-                            child_path = child.getroottree().getpath(child)
-                            print("Le path", child_path)
-                            if child_path in path_to_indices :
-                                
-                                new_value = fieldList[path_to_indices[child_path][0]]._value
-                                new_text = ''
-                                if new_value != None :
-                                    for value in new_value :
-                                        new_text = new_text + value + " "
-                                    new_text = new_text[:-1]
-                                    
-                                dataTree.find(child_path).text = new_text
-                                
-                            elif len(elData) == 1 and FirstEl :
-                                cp_split = child_path.split('/el[')
-                                new_child_path = cp_split[0] + cp_split.split(']/')[1]
-                                
-                                new_value = fieldList[path_to_indices[new_child_path][0]]._value
-                                new_text = ''
-                                if new_value != None :
-                                    for value in new_value :
-                                        new_text = new_text + value + " "
-                                    new_text = new_text[:-1]
-                                    
-                                dataTree.find(child_path).text = new_text
-                                
-                                
-                                
-                                
-                                
+                childData = dataTree.findall(obj_path[4:])
+                
+                childList = path_to_indices[obj_path]
+                
+                i = 0
+                for child in childData :
+                    if isinstance(child.tag, str) :
                         
-                    
-        
-        """
-        elSimple = False
-        i = 0
-        for field in fieldList:
-            # Récupérer le chemin et la nouvelle valeur
-            path = field.path
-            new_value = field._value
-            new_text = ''
-            if new_value != None :
-                for value in new_value :
-                    new_text = new_text + value + " "
-                new_text = new_text[:-1]
-        
-            # Trouver l'élément correspondant dans l'arbre
-
-            if "el" in path :
-                
-                if "el" == path[-2:] :
-                    
-                    if not elSimple :
-                        nbrExist = len(dataTree.findall(path[4:]))
-                        elSimple = True
-                        i = 0
-                    else :
-                        if nbrExist > i :
-                            dataTree.findall(path[4:])[i].text = new_text
-                        else :
-                            pass
-                    
-            elif dataTree.find(path[4:]) :
-                
-                if elSimple :
-                    elSimple = False
-                    i = 0
-                else :
-                    dataTree.find(path[4:]).text = new_text
-                
-            else :
-                # Si le chemin n'existe pas, créer les éléments manquants et ajouter la feuille
-                parent_path, leaf_name = os.path.split(path)
-                print(parent_path)
-        
-                # Trouver le parent de la feuille (ou créer les éléments manquants)
-                parent_element = dataTree.xpath(parent_path.split("[")[0]) if parent_path else dataTree.getroot()
-                # print(parent_element)
-                new_leaf = etree.SubElement(parent_element[0], leaf_name)
-                new_leaf.text = new_text
-         
-        """    
-        """    
-        root_data_element = dataTree.find('Data')
-        
-        # Création du dictionnaire associant chaque chemin à une liste d'indices
-        path_to_indices = {}
-        
-        # Parcourir les objets Field et remplir le dictionnaire
-        for index, field in enumerate(fieldList):
-            path = field.path
-            if path not in path_to_indices:
-                path_to_indices[path] = []  # Initialiser la liste vide pour ce chemin
-            path_to_indices[path].append(index)  # Ajouter l'indice à la liste correspondante
-
-        print(path_to_indices)
-        el_path = ''
-        # Parcours de l'arbre XML en sautant les premières lignes
-        for dataElement in root_data_element.iter():
-            # print(dataElement.tag)
-            
-            # Test pour sauter les commentaires
-            if isinstance(dataElement.tag, str) :
-                
-                if el_path != '' :
-                    pass_path = dataElement.getroottree().getpath(dataElement)
-                    if el_path == pass_path[:len(el_path)] :
-                        pass
-                    else :
-                        el_path = ''
-
-                    
-                if el_path == '' :
-                    # Création d'un objet pour chaque balise à la fin de branche
-                    if len(dataElement) == 0 and dataElement.tag != "el":
-                        
-                        
-                        obj_path = dataElement.getroottree().getpath(dataElement)
-                        print(obj_path)
-                        values = fieldList[path_to_indices[obj_path[1:]][0]]._value
-                        
-                        if values != None :
+                        if child.tag == childName :
+                            new_value = fieldList[childList[i]]._value
                             new_text = ''
-                            for val in values :
-                                new_text = new_text + val + ' '
-                            new_text = new_text[:-1]
-                        else :
-                            new_text = None
+                            if new_value != None :
+                                for value in new_value :
+                                    new_text = new_text + value + " "
+                                new_text = new_text[:-1]
                             
-                        dataElement.text = new_text
+                            child.text = new_text
+                            i += 1
+                
+                if len(childList) > i :
+                    existing_parent = childData[0].getparent()
                     
-                    elif len(dataElement) == 0 and dataElement.tag == "el" :
-                            
-                        el_path = dataElement.getroottree().getpath(dataElement)
-                        print(el_path)
-                        indexFields = path_to_indices[el_path[1:]]
-                        i = 0
-                        
-                        for elElement in dataTree.findall(el_path[5:]):
-                            if isinstance(elElement.tag, str) :
-                                values = fieldList[indexFields[i]]._value
-                                
-                                if values != None :
+                    j = i
+                    for child in childList[j:] :
+                        new_branch = etree.Element(existing_parent.tag, attrib=existing_parent.attrib)
+                        for leaf in existing_parent :
+                            if isinstance(leaf.tag, str) :
+                                new_leaf = etree.Element(leaf.tag, attrib=leaf.attrib)
+                                if new_leaf.tag == childName :
+                                    new_value = fieldList[childList[j]]._value
                                     new_text = ''
-                                    for val in values :
-                                        new_text = new_text + val + ' '
-                                    new_text = new_text[:-1]
-                                else :
-                                    new_text = None
-                                
-                                dataElement.text = new_text
-                                i+=1
-                                
-                    elif len(dataElement) != 0 and dataElement.tag == "el":
-                        
-                        obj_path = dataElement.getroottree().getpath(dataElement)
-                        print(obj_path)
-                        el_path = obj_path[:-2]
-                        
-                        for elElement in dataTree.findall(obj_path) :
-                            
-                            for child in elElement.iter() :
-                                if isinstance(child.tag, str) :
-                                    child_path = child.getroottree().getpath(child)
-                                    child_values = fieldList[path_to_indices[child_path[1:]][0]]._value
-                                    
-                                    if child_values != None :
-                                        new_text = ''
-                                        for val in child_values :
-                                            new_text = new_text + val + ' '
+                                    if new_value != None :
+                                        for value in new_value :
+                                            new_text = new_text + value + " "
                                         new_text = new_text[:-1]
-                                    else :
-                                        new_text = None
-                                        
-                                    dataElement.text = new_text
-        """
-                                
+                                    new_leaf.text = new_text
+                                new_branch.append(new_leaf)
+  
+                        j+=1
+                        parent_branch = existing_parent.getparent()
+                        parent_branch.append(new_branch)
                     
-        for i in dataTree.iter() :
-            print(i.tag)
-        return dataTree
-    
-        
-        
+        return dataTree      
