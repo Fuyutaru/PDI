@@ -130,18 +130,22 @@ class XmlEditorGUI(QMainWindow):
                         self.data_xml_structure = data
                         # data_empty = self.data_xml_structure.createData()
                         self.fields = self.specification_xml_structure.convert2Field(data.content)
+
+                        
+                        self.deleteLayout()
+                        self.addFieldData()
                     
                         # print(self.fields[4].type)
                         # print(self.fields[4].value)
                     
-                        QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
+                        QMessageBox.information(self, 'Succès', 'Fichier de données chargé avec succès!')
                     else:
                         QMessageBox.information(self, 'Erreur', 'Le fichier de données ne correspond pas au fichier de spécification!')
                     
                 else:
-                    QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+                    QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de données.')
             else:
-                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de données.')
             
 
     def onFileLoaded(self, data):
@@ -180,13 +184,145 @@ class XmlEditorGUI(QMainWindow):
             
             tablewidget.setParent(None)
         
+    def addFieldData(self) :
+        
+        tableData = []
+        tableRow = []
+        tableNameColumns = []
+        tableRowPath = ""
+        listFieldTable = []
+        n = len(self.fields)
+        count = 0
+        for i in range(n):
+            print(self.fields[i].name, self.fields[i].path,self.fields[i].value)
+            typeField = self.fields[i].type
+            pathField = self.fields[i].path
+            valueField = self.fields[i].value
+            nameField = self.fields[i].name
+            pathFieldSplit = self.fields[i].path.split("/")
+            pathFieldSplitNext = []
+            #print(pathFieldSplit)
+            
+            
+            
+            if i < n-1 :
+                pathFieldSplitNext = self.fields[i+1].path.split("/")
+            
+            if pathFieldSplit[-1] == "el" :
+                tableData.append(valueField)
+                if pathFieldSplit != pathFieldSplitNext or i == n-1 :
+                    self.addTableData(pathFieldSplit[-2], pathField, typeField, tableData) 
+                    tableData=[]
+                        
+            elif pathFieldSplit[-2] == "el":
+                pathFieldWithout = pathFieldSplit
+                pathFieldWithout[-2] = pathFieldSplit[-2][:2]
+                if tableRowPath == pathFieldWithout:
+                    tableData.append(tableRow)
+                    tableRow = []
+                if count == 0 :
+                    tableRowPath = pathFieldWithout
+                    count = 1
+                if not ((nameField, typeField) in tableNameColumns) :
+                    tableNameColumns.append((nameField, typeField))
+                tableRow.append(valueField)
+                
+                # test = False
+                # if pathFieldSplit[:-2] != pathFieldSplitNext[:-2] or (pathFieldSplit[-2][:2] !=):
+                #     test = True
+                
+                #print(pathFieldSplit[:-1], pathFieldSplitNext[:-1])
+                if i == n-1 or (pathFieldSplit[:-2] != pathFieldSplitNext[:-2]):
+                    tableData.append(tableRow)
+                    name = pathFieldSplit[-3]
+                    path = pathField[:-(len(pathFieldSplit[-1])+1)]
+                    self.addFieldTableData(tableNameColumns, path, name, tableData)
+                    tableData = []
+                    count = 0
+                
+            
+            elif len(typeField) != 1 :
+                name = QLabel(pathFieldSplit[-1])
+                multiTypeLayout = QHBoxLayout()
+                multiTypeLayout.addWidget(name)
+                for j in range(len(typeField)):
+                    t = typeField[j]
+                    v = valueField[j]
+                    if t.strip('"') in enum.enumDict :
+                        t = t.strip('"')
+                        enumComboBox = QComboBox()
+                        enumComboBox.addItems(enum.enumDict[t])
+                        enumComboBox.setObjectName(pathField +  " " + t)
+                        enumComboBox.setCurrentText(v)
+                        enumLayout = QHBoxLayout()
+                        enumLayout.addWidget(enumComboBox)
+                        typeEnum = QLabel("(" + t + ")")
+                        enumLayout.addWidget(typeEnum)
+                        multiTypeLayout.addLayout(enumLayout)
+                    else :
+                        fieldLayout = QHBoxLayout()
+                        field = QLineEdit()
+                        field.setObjectName(pathField + " " + t)
+                        field.setText(v)
+                        fieldLayout.addWidget(field)
+                        typeField2 = QLabel("(" + t + ")")
+                        fieldLayout.addWidget(typeField2)
+                        multiTypeLayout.addLayout(fieldLayout)
+                        
+                self.mainLayout.addLayout(multiTypeLayout)
+                
+                        
+                        
+            
+            elif typeField[0].strip('"') in enum.enumDict :
+                t = typeField[0].strip('"')
+                v = valueField[0]
+                enumComboBox = QComboBox()
+                enumComboBox.addItems(enum.enumDict[t])
+                enumComboBox.setObjectName(pathField + " " + t)
+                enumComboBox.setCurrentText(v)
+                enumLayout = QHBoxLayout()
+                nom = QLabel(pathFieldSplit[-1])
+                enumLayout.addWidget(nom)
+                enumLayout.addWidget(enumComboBox)
+                typeEnum = QLabel("(" + t + ")")
+                enumLayout.addWidget(typeEnum)
+                self.mainLayout.addLayout(enumLayout)
+            
+            
+            else :
+                fieldLayout = QHBoxLayout()
+                v = valueField[0]
+                nom = QLabel(pathFieldSplit[-1])
+                field = QLineEdit()
+                field.setObjectName(pathField + " " + typeField[0])
+                field.setText(v)
+                fieldLayout.addWidget(nom)
+                fieldLayout.addWidget(field)
+                typeField2 = QLabel("(" + typeField[0] + ")")
+                fieldLayout.addWidget(typeField2)
+                self.mainLayout.addLayout(fieldLayout)
+        
+        scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        widget = QWidget()
+        self.mainLayout.addStretch()
+        widget.setLayout(self.mainLayout)
+        
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+
+        self.setCentralWidget(scroll)
+        
+        self.setLayout(self.mainLayout)
     
     def addFields(self):
         
         listFieldTable = []
         n = len(self.fields)
         for i in range(n):
-            print(self.fields[i].name, self.fields[i].path)
+            #print(self.fields[i].name, self.fields[i].path)
             typeField = self.fields[i].type
             pathField = self.fields[i].path
             pathFieldSplit = self.fields[i].path.split("/")
@@ -314,7 +450,45 @@ class XmlEditorGUI(QMainWindow):
         completeLayout.addLayout(tabLayout)
         self.mainLayout.addLayout(completeLayout)
         
+    def addTableData(self, name, path, types, tableData):
         
+        def addLine():
+            rowPosition = table.rowCount()
+            table.insertRow(rowPosition)
+        
+        addButton = QPushButton("+")
+        addButton.clicked.connect(addLine)
+        
+        
+        tableName = QLabel(name)
+        
+        table = QTableWidget()
+        table.setObjectName(path + " el")
+        
+        n = len(types)
+        l = len(tableData)
+        table.setRowCount(l)
+        table.setColumnCount(n)
+        columns = []
+        for i in range(n) :
+            columns.append("(" + types[i] + ")")
+        table.setHorizontalHeaderLabels(columns)
+        
+        
+        for i in range(l):
+            for j in range(n):
+                item = QTableWidgetItem(tableData[i][j])
+                table.setItem(i,j,item)
+        
+        completeLayout = QVBoxLayout()
+        
+        tabLayout = QHBoxLayout()
+        tabLayout.addWidget(table)
+        tabLayout.addWidget(addButton)
+        
+        completeLayout.addWidget(tableName)
+        completeLayout.addLayout(tabLayout)
+        self.mainLayout.addLayout(completeLayout)
         
     
     def addFieldTable(self, listFieldTable, path, name):
@@ -341,7 +515,6 @@ class XmlEditorGUI(QMainWindow):
             columns.append(listFieldTable[i][0]+ "\n(" + listFieldTable[i][1]+")")
         table.setHorizontalHeaderLabels(columns)
         
-        table.move(0, 0)
         
         completeLayout = QVBoxLayout()
         
@@ -353,6 +526,57 @@ class XmlEditorGUI(QMainWindow):
         completeLayout.addLayout(tabLayout)
         self.mainLayout.addLayout(completeLayout)
         
+        
+    def addFieldTableData(self, tableNameColumns, path, name, tableData):
+        
+            
+        def addLine():
+            rowPosition = table.rowCount()
+            table.insertRow(rowPosition)
+            
+        
+        addButton = QPushButton("+")
+        addButton.clicked.connect(addLine)
+        
+        tableName = QLabel(name)
+        
+        table = QTableWidget()
+        table.setObjectName(path + " el")
+        
+        n = len(tableNameColumns)
+        l = len(tableData)
+        table.setRowCount(l)
+        table.setColumnCount(n)
+        columns = []
+        for i in range(n) :
+            typeColumns = tableNameColumns[i][1][0]
+            if len(tableNameColumns[i][1]) > 1 :
+                for j in range(1, len(tableNameColumns[i][1])):
+                    typeColumns += " " + tableNameColumns[i][1][j]
+            columns.append(tableNameColumns[i][0]+ "\n(" + typeColumns +")")
+        table.setHorizontalHeaderLabels(columns)
+        
+        
+        for i in range(l):
+            for j in range(n):
+                data = tableData[i][j][0]
+                if len(tableData[i][j]) > 0 :
+                    for k in range(1, len(tableData[i][j])):
+                        data += " " + tableData[i][j][k]
+                item = QTableWidgetItem(data)
+                table.setItem(i,j,item)
+        
+        completeLayout = QVBoxLayout()
+        
+        tabLayout = QHBoxLayout()
+        tabLayout.addWidget(table)
+        tabLayout.addWidget(addButton)
+        
+        completeLayout.addWidget(tableName)
+        completeLayout.addLayout(tabLayout)
+        self.mainLayout.addLayout(completeLayout)
+    
+    
     def extraireDonneesEtTypes(self): 
         """parcourt les diff widget de l'espace, on stock dans un dico le nom le widget et le type, retrouve tt les widget enfant de type QCheckBox"""
         self.donnees_et_types = {}
@@ -402,14 +626,37 @@ class XmlEditorGUI(QMainWindow):
             if self.donnees_et_types[path][1] == "el" :
                 table = self.donnees_et_types[path][0]
                 if type(table[0][0]) == tuple :
-                    print("tableau de champs")
+                    col = len(table[0])
+                    row = len(table)
+                    for i in range(1,row):
+                        
+                        for j in range(0,col):
+                            typef = table[0][j][1]
+                            name = table[0][j][0]
+                            value = [table[i][j]]
+                            field = Field(name, typef, path, value )
+                            self.dataAsField.append(field)
+                            print(field)
+                    
                     
                 else :
-                    print("tableau")
+                    col = len(table[0])
+                    typesTable = [table[0][0]]
+                    if col > 1 :
+                        for i in range(1, col):
+                            typesTable.append(table[0][i])
+                    row = len(table)
+                    for i in range(1,row):
+                        value = [table[i][0]]
+                        for j in range(1,col):
+                            value.append(table[i][j])
+                        field = Field(path.split("/")[-1],typesTable, path, value )
+                        self.dataAsField.append(field)
+                            
             else :
-                field = Field(path.split("/")[-1],self.donnees_et_types[path][1], path, self.donnees_et_types[path][0] )
+                field = Field(path.split("/")[-1],self.donnees_et_types[path][1].split(), path, self.donnees_et_types[path][0].split() )
                 self.dataAsField.append(field)
-                #print(field.name, field.type, field.path, field.value)
+                # print(field.name, field.type, field.path, field.value)
         
         
     # def setDataInField(self):

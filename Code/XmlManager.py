@@ -63,69 +63,76 @@ class XmlManager(Strategy):
         
         root_spec_element = specTree.find('Data')
         
+        NbrChild = 0
+        NbrPass = 0
         # Parcours de l'arbre XML en sautant les premières lignes
         for specElement in root_spec_element.iter():
             
             # Test pour sauter les commentaires
             if isinstance(specElement.tag, str) :
                 
-                # Création d'un objet pour chaque balise à la fin de branche
-                if len(specElement) == 0 and specElement.tag != "el":  # Vérifier si c'est une balise finale (pas d'enfants)
-                    obj_name = specElement.tag
-                    obj_type = [Type for Type in specElement.text.split(" ")]
-                    obj_path = specElement.getroottree().getpath(specElement)[1:]
-                    
-                    dataElement = dataTree.find(obj_path[4:])
-                    
-                    if dataElement.text == None :
-                        obj_value = None
-                    else :
-                        obj_value = [val for val in dataElement.text.split(" ")]
-                    
-                    # Créer l'objet et l'ajouter à la liste
-                    field = Field(obj_name, obj_type, obj_path, obj_value)
-                    field_list.append(field)
+                if NbrChild > NbrPass :
+                    NbrPass += 1
+                else :
+                    # Création d'un objet pour chaque balise à la fin de branche
+                    if len(specElement) == 0 and specElement.tag != "el":  # Vérifier si c'est une balise finale (pas d'enfants)
+                        obj_name = specElement.tag
+                        obj_type = [Type for Type in specElement.text.split(" ")]
+                        obj_path = specElement.getroottree().getpath(specElement)[1:]
                         
-                elif len(specElement) == 0 and specElement.tag == "el" :
-                    
-                    obj_name = specElement.tag
-                    obj_type = [Type for Type in specElement.text.split(" ")]
-                    obj_path = specElement.getroottree().getpath(specElement)[1:]
-                    
-                    for elElement in dataTree.findall(obj_path[4:]):
-                        if isinstance(elElement.tag, str) :
-                            if dataElement.text == None :
-                                obj_value = None
-                            else :
-                                obj_value = [val for val in dataElement.text.split(" ")]
+                        dataElement = dataTree.find(obj_path[4:])
+                        
+                        if dataElement.text == None :
+                            obj_value = None
+                        else :
+                            obj_value = [val for val in dataElement.text.split(" ")]
+                        
+                        # Créer l'objet et l'ajouter à la liste
+                        field = Field(obj_name, obj_type, obj_path, obj_value)
+                        field_list.append(field)
                             
-                            field = Field(obj_name, obj_type, obj_path, obj_value)
-                            field_list.append(field)
+                    elif len(specElement) == 0 and specElement.tag == "el" :
                         
-                elif len(specElement) != 0 and specElement.tag == "el" :
-                    
-                    # Récupérer les types associés aux enfants de specElement
-                    types = {child.tag: child.text for child in specElement}
-                    obj_path = specElement.getroottree().getpath(specElement)[1:]
-                    
-                    # Parcourir les éléments correspondants dans le fichier de données
-                    for elElement in dataTree.findall(obj_path[5:]):
+                        obj_name = specElement.tag
+                        obj_type = [Type for Type in specElement.text.split(" ")]
+                        obj_path = specElement.getroottree().getpath(specElement)[1:]
                         
-                        if isinstance(elElement.tag, str) :
+                        for elElement in dataTree.findall(obj_path[4:]):
+                            if isinstance(elElement.tag, str) :
+                                if elElement.text == None :
+                                    obj_value = None
+                                else :
+                                    obj_value = [val for val in elElement.text.split(" ")]
+                                
+                                field = Field(obj_name, obj_type, obj_path, obj_value)
+                                field_list.append(field)
                             
-                            for child in elElement:
-                                if isinstance(child.tag, str) :
-                                    obj_name = child.tag
-                                    obj_path = elElement.getroottree().getpath(child)[1:]
-                                    if dataElement.text == None :
-                                        obj_value = None
-                                    else :
-                                        obj_value = [val for val in dataElement.text.split(" ")]
-                                    obj_type = [Type for Type in types[obj_name].split(" ")]
-                                    
-                                    field = Field(obj_name, obj_type, obj_path, obj_value)
-                                    field_list.append(field)
-                    
+                    elif len(specElement) != 0 and specElement.tag == "el" :
+                        
+                        # Récupérer les types associés aux enfants de specElement
+                        types = {child.tag: child.text for child in specElement}
+                        obj_path = specElement.getroottree().getpath(specElement)[1:]
+                        
+                        # Parcourir les éléments correspondants dans le fichier de données
+                        for elElement in dataTree.findall(obj_path[5:]):
+                            
+                            if isinstance(elElement.tag, str) :
+                                
+                                NbrChild = 0
+                                for child in elElement:
+                                    NbrChild += 1
+                                    if isinstance(child.tag, str) :
+                                        obj_name = child.tag
+                                        obj_path = child.getroottree().getpath(child)[1:]
+                                        if child.text == None :
+                                            obj_value = None
+                                        else :
+                                            obj_value = [val for val in child.text.split(" ")]
+                                        obj_type = [Type for Type in types[obj_name].split(" ")]
+                                        
+                                        field = Field(obj_name, obj_type, obj_path, obj_value)
+                                        field_list.append(field)
+                        
         return field_list
         
         
