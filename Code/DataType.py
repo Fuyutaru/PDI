@@ -45,4 +45,7 @@ class DataType():
             bool: True if the structure and content of dataTree match the typeTree, False otherwise.
         """
         return self.strat.compare(typeTree, dataTree)
+    
+    def updateData(self, fieldList) :
+        self.content = self.strat.updateData(self.content, fieldList)
 

@@ -2,51 +2,55 @@
 <Root>
    <Type>"MMVII_Serialization"</Type>
    <Version>"0.0.0"</Version>
-   <Data><FullSpecifTarget><BitEncoding><Specifs><Type></Type>
-               <NbBits></NbBits>
-               <FreqCircEq></FreqCircEq>
-               <MinHammingD></MinHammingD>
-               <UseHammingCode></UseHammingCode>
-               <MaxRunL></MaxRunL>
-               <Parity></Parity>
-               <MaxNb></MaxNb>
-               <Base4N></Base4N>
-               <Computed><Prefix></Prefix>
-                  <NbDigit></NbDigit>
-                  <MaxNum></MaxNum>
-                  <MaxLowCode></MaxLowCode>
-                  <MaxCodeEqui></MaxCodeEqui>
+   <Data><FullSpecifTarget><BitEncoding><Specifs><hihi></hihi>
+               <hoho>False</hoho>
+               <coco>0 True False</coco>
+               <toto>"CERN" "IGNIndoor"</toto>
+               <Type>"CERN"</Type>
+               <NbBits>14</NbBits>
+               <FreqCircEq>14</FreqCircEq>
+               <MinHammingD>1</MinHammingD>
+               <UseHammingCode>0</UseHammingCode>
+               <MaxRunL>1000 1000</MaxRunL>
+               <Parity>2</Parity>
+               <MaxNb>1000</MaxNb>
+               <Base4N>10</Base4N>
+               <Computed><Prefix>"CERN_Nbb14_Freq14_Hamm1_Run1000_1000"</Prefix>
+                  <NbDigit>3</NbDigit>
+                  <MaxNum>516</MaxNum>
+                  <MaxLowCode>8127</MaxLowCode>
+                  <MaxCodeEqui>16380</MaxCodeEqui>
                </Computed>
             </Specifs>
-            <Encoding><el><NumCode></NumCode>
-                  <Name></Name>
+            <Encoding><el><NumCode>1 129</NumCode>
+                  <Name>"001"</Name>
                </el>
-            </Encoding>
+            <el><NumCode>2 135</NumCode><Name>"002"</Name></el><el><NumCode>3 139</NumCode><Name>"003"</Name></el><el><NumCode>4 141</NumCode><Name>"004"</Name></el><el><NumCode>5 147</NumCode><Name>"005"</Name></el><el><NumCode>6 149</NumCode><Name>"006"</Name></el><el><NumCode>7 153</NumCode><Name>"007"</Name></el><el><NumCode>8 159</NumCode><Name>"008"</Name></el><el><NumCode>9 163</NumCode><Name>"009"</Name></el><el><NumCode>10 165</NumCode><Name>"010"</Name></el><el><NumCode>11 169</NumCode><Name>"011"</Name></el><el><NumCode>12 175</NumCode><Name>"012"</Name></el><el><NumCode>13 177</NumCode><Name>"013"</Name></el><el><NumCode>14 183</NumCode><Name>"014"</Name></el><el><NumCode>15 187</NumCode><Name>"015"</Name></el></Encoding>
          </BitEncoding>
-         <GeometryCodedTarget><Type></Type>
-            <NbBits></NbBits>
-            <CenterF></CenterF>
-            <CornEl1></CornEl1>
-            <CornEl2></CornEl2>
-            <SzCCB></SzCCB>
-            <ThickN_WhiteInt></ThickN_WhiteInt>
-            <ThickN_Code></ThickN_Code>
-            <ThickN_WhiteExt></ThickN_WhiteExt>
-            <ThickN_BorderExt></ThickN_BorderExt>
-            <ThickN_Car></ThickN_Car>
-            <ChessBoardAngle></ChessBoardAngle>
-            <ModeFlight></ModeFlight>
-            <CBAtTop></CBAtTop>
-            <WithChessBoard></WithChessBoard>
-            <WhiteBackGround></WhiteBackGround>
-            <ZeroIsBackGround></ZeroIsBackGround>
-            <AntiClockWiseBit></AntiClockWiseBit>
-            <RayOrientTablet></RayOrientTablet>
-            <CenterOrientTablet></CenterOrientTablet>
-            <RayCenterMiniTarget></RayCenterMiniTarget>
+         <GeometryCodedTarget><Type>"CERN"</Type>
+            <NbBits>14</NbBits>
+            <CenterF>299.5 299.5</CenterF>
+            <CornEl1>394.097822830873554 299.5</CornEl1>
+            <CornEl2>299.5 394.097822830873554</CornEl2>
+            <SzCCB>1</SzCCB>
+            <ThickN_WhiteInt>1</ThickN_WhiteInt>
+            <ThickN_Code>1</ThickN_Code>
+            <ThickN_WhiteExt>0</ThickN_WhiteExt>
+            <ThickN_BorderExt>0.05</ThickN_BorderExt>
+            <ThickN_Car>1</ThickN_Car>
+            <ChessBoardAngle>0</ChessBoardAngle>
+            <ModeFlight>0</ModeFlight>
+            <CBAtTop>0</CBAtTop>
+            <WithChessBoard>0</WithChessBoard>
+            <WhiteBackGround>0</WhiteBackGround>
+            <ZeroIsBackGround>1</ZeroIsBackGround>
+            <AntiClockWiseBit>0</AntiClockWiseBit>
+            <RayOrientTablet>-1</RayOrientTablet>
+            <CenterOrientTablet>0 0</CenterOrientTablet>
+            <RayCenterMiniTarget>-1</RayCenterMiniTarget>
          </GeometryCodedTarget>
-         <Centers><el></el>
-         </Centers>
+         <Centers><el>531.181612273731616 246.616873798799617</el>
+         <el>485.299836221587782 151.338338903274831</el><el>402.61104287690182 85.38978699861687</el><el>299.5 61.85953767034848</el><el>196.388957123098209 85.38978699861687</el><el>113.700163778412232 151.338338903274831</el><el>67.818387726268341 246.616873798799617</el><el>67.818387726268341 352.383126201200355</el><el>113.700163778412232 447.661661096725197</el><el>196.388957123098209 513.610213001383158</el><el>299.5 537.140462329651541</el><el>402.61104287690182 513.610213001383158</el><el>485.299836221587782 447.661661096725197</el><el>531.181612273731616 352.383126201200355</el></Centers>
       </FullSpecifTarget>
    </Data>
 </Root>

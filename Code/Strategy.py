@@ -28,3 +28,7 @@ class Strategy(ABC):
     @abstractmethod
     def compare(self):
         pass
+    
+    @abstractmethod
+    def updateData(self):
+        pass
