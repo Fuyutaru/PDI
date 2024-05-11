@@ -14,11 +14,11 @@ class Strategy(ABC):
         pass
     
     @abstractmethod
-    def convert2Field(self):
+    def createData(self, tree, filename):
         pass
     
     @abstractmethod
-    def createData(self):
+    def convert2Field(self, specTree, dataTree):
         pass
     
     @abstractmethod
@@ -27,4 +27,8 @@ class Strategy(ABC):
     
     @abstractmethod
     def compare(self):
+        pass
+    
+    @abstractmethod
+    def updateData(self, dataTree, fieldList):
         pass
