@@ -4,11 +4,23 @@ import re
 from Field import Field
 import copy
 from DataType import DataType
-from dico import Dico
 from Enumeration import enum
 import os.path
 
 class XmlManager(Strategy):
+    
+    dico = {'size_t': int,
+               "int": int,
+               "ssize_t": int,
+               "unsigned": int,
+               "string": str,
+               "std::string": str,
+               "double": float,
+               "float": float,
+               "bool": "boolean",
+               '"enum_TypeCodedTarget"': "enum_TypeCodedTarget",
+               '"enum_SysCoGeo"': "enum_SysCoGeo"
+               }
     
     def __init__(self):
         pass
@@ -225,9 +237,9 @@ class XmlManager(Strategy):
                 if ' ' in element1.text:
                     text = element1.text.split()
                     for i in range(len(text)):
-                        text[i] = Dico.content.get(text[i], str)
+                        text[i] = self.dico.get(text[i], str)
                 else:
-                    text = Dico.content.get(element1.text, str)
+                    text = self.dico.get(element1.text, str)
                 
                 list_t.append([path, text])
         

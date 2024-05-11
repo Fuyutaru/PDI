@@ -56,12 +56,12 @@ if __name__ == "__main__":
     # if type(b[1]) != a[0]:
     #     print(type(b[1]))
     #     print("connnnnnn")
-    tab = ['"1"', '2.2', '4', "flaa"]
-    for i in range(len(tab)):
-        tab[i] = convert_to_appropriate_type(tab[i])
-    print(tab)
-    for ele in tab:
-        print(type(ele))
+    # tab = ['"1"', '2.2', '4', "flaa"]
+    # for i in range(len(tab)):
+    #     tab[i] = convert_to_appropriate_type(tab[i])
+    # print(tab)
+    # for ele in tab:
+    #     print(type(ele))
     
     
     
