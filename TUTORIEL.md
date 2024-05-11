@@ -4,7 +4,7 @@ Ce guide vous aidera à parcourir les étapes essentielles pour une utilisation 
 
 ## Étape 1
 
-Lancez l'éditeur à partir de votre console, de Visual Studio ou d'Anaconda.
+Lancez l'éditeur (main.py) à partir de votre console, de Visual Studio ou d'Anaconda.
 
 ## Étape 2
 
