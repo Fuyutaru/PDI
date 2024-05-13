@@ -821,10 +821,13 @@ class XmlEditorGUI(QMainWindow):
         #     if self.dataAsField[i].name == "toto":
             print(self.dataAsField[i].name, self.dataAsField[i]._value, self.dataAsField[i].path)
         
-        
         self.data_xml_structure.updateData(self.dataAsField)
-        self.data_xml_structure.convert2File()
-        print("sauvé")
+        if (self.data_xml_structure.compare(self.specification_xml_structure, self.data_xml_structure) == True):
+            self.data_xml_structure.convert2File()
+            print("sauvé")
+        else:
+            QMessageBox.warning(self, 'Erreur', 'Un ou plusieurs champs contiennent des valeurs qui ne correspondent pas au bon type.')
+    
     
 
 if __name__ == "__main__":
