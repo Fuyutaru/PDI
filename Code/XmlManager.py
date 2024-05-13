@@ -68,7 +68,7 @@ class XmlManager(Strategy):
     
     def convert2File(self, tree, filename):
         """
-        Function that convert the object DataType into a XML file based on the filename.
+        Function that convert the content of the object DataType into a XML file based on the filename.
 
         Parameters
         ----------
@@ -86,7 +86,7 @@ class XmlManager(Strategy):
         
     def createData(self, tree, filename) :
         """
-        Function that create the DataType 'data' associated with the specification.
+        Function that create the DataType 'data' associated with the specifications.
         The content is a tree with the same strucutre as the specification tree but with empty leaves.
 
         Parameters
