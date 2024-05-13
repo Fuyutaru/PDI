@@ -19,8 +19,7 @@ from Field import Field
 from XmlManager import XmlManager
 
 class XmlEditorGUI(QMainWindow):
-    def __init__(self): #Champs sera a retirer quand on aura la conversion
-                                #des fichiers XML en liste de champs
+    def __init__(self): 
         super().__init__()
         self.specification_xml_path = None
         self.data_xml_path = None
@@ -33,12 +32,7 @@ class XmlEditorGUI(QMainWindow):
         self.count = 0
         
         self.countTable = 0
-        
-        #TEST D'AJOUT DES CHAMPS
-   
-    
 
-    
         self.setWindowTitle('Éditeur de Fichiers XML')
         self.setGeometry(100, 100, 800, 600)
         self.setWindowIcon(QIcon('./icone.png'))
@@ -59,14 +53,12 @@ class XmlEditorGUI(QMainWindow):
 
         # Buttons
         saveButton = QPushButton(QIcon('./icon.png'), 'Sauvegarder', self)
-        #saveButton.clicked.connect(self.saveDataXml)
         saveButton.clicked.connect(self.save)
         saveButton.setToolTip('Sauvegarder le fichier XML')
         saveButton.setObjectName("Save")
 
         # Layouts
         self.mainLayout = QVBoxLayout()
-        # self.mainLayout.addWidget(self.textEdit)
         
 
         buttonsLayout = QHBoxLayout()
@@ -84,13 +76,13 @@ class XmlEditorGUI(QMainWindow):
         
             
     def loadSpecificationXml(self):
-        #met la fct de tchek/verif la direct
+        
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de spécification XML', '', 'XML files (*.xml)')
         if path:
             self.specification_xml_path = path
             tree = ET.parse(self.specification_xml_path)
             strat = XmlManager()
-            # self.specification_xml_structure = dh.analyzeSpecification(tree)
+            
             if (strat.verif(tree) == True):
                 specif = DataType(strat, self.specification_xml_path)
                 specif.readFile()
@@ -114,11 +106,6 @@ class XmlEditorGUI(QMainWindow):
             path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
             if path:
                 self.data_xml_path = path
-                
-                # self.loader = FileLoader(path)
-                # self.loader.fileLoaded.connect(self.onFileLoaded)
-                # self.loader.start()
-                
                 tree = ET.parse(self.data_xml_path)
                 strat = XmlManager()
             
@@ -127,15 +114,11 @@ class XmlEditorGUI(QMainWindow):
                     data.readFile()
                     if (data.compare(self.specification_xml_structure, data) == True):
                         self.data_xml_structure = data
-                        # data_empty = self.data_xml_structure.createData()
                         self.fields = self.specification_xml_structure.convert2Field(data.content)
 
                         
                         self.deleteLayout()
                         self.addFieldData()
-                    
-                        # print(self.fields[4].type)
-                        # print(self.fields[4].value)
                     
                         QMessageBox.information(self, 'Succès', 'Fichier de données chargé avec succès!')
                     else:
@@ -194,14 +177,12 @@ class XmlEditorGUI(QMainWindow):
         n = len(self.fields)
         count = 0
         for i in range(n):
-            #print(self.fields[i].name, self.fields[i].path,self.fields[i].value)
             typeField = self.fields[i].type
             pathField = self.fields[i].path
             valueField = self.fields[i].value
             nameField = self.fields[i].name
             pathFieldSplit = self.fields[i].path.split("/")
             pathFieldSplitNext = []
-            #print(pathFieldSplit)
             
             
             
@@ -227,11 +208,6 @@ class XmlEditorGUI(QMainWindow):
                     tableNameColumns.append((nameField, typeField))
                 tableRow.append(valueField)
                 
-                # test = False
-                # if pathFieldSplit[:-2] != pathFieldSplitNext[:-2] or (pathFieldSplit[-2][:2] !=):
-                #     test = True
-                
-                #print(pathFieldSplit[:-1], pathFieldSplitNext[:-1])
                 if i == n-1 or (pathFieldSplit[:-2] != pathFieldSplitNext[:-2]):
                     tableData.append(tableRow)
                     name = pathFieldSplit[-3]
@@ -303,7 +279,7 @@ class XmlEditorGUI(QMainWindow):
                 fieldLayout.addWidget(typeField2)
                 self.mainLayout.addLayout(fieldLayout)
         
-        scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        scroll = QScrollArea() 
         widget = QWidget()
         self.mainLayout.addStretch()
         widget.setLayout(self.mainLayout)
@@ -330,7 +306,6 @@ class XmlEditorGUI(QMainWindow):
         listFieldTable = []
         n = len(self.fields)
         for i in range(n):
-            #print(self.fields[i].name, self.fields[i].path)
             typeField = self.fields[i].type
             pathField = self.fields[i].path
             pathFieldSplit = self.fields[i].path.split("/")
@@ -408,7 +383,7 @@ class XmlEditorGUI(QMainWindow):
                 fieldLayout.addWidget(typeField)
                 self.mainLayout.addLayout(fieldLayout)
         
-        scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        scroll = QScrollArea() 
         widget = QWidget()
         self.mainLayout.addStretch()
         widget.setLayout(self.mainLayout)
@@ -765,7 +740,6 @@ class XmlEditorGUI(QMainWindow):
                             pathField = path + "/" + name
                             field = Field(name, typef, pathField, value )
                             self.dataAsField.append(field)
-                            #print(field.name, field.value)
                     
                     
                     
@@ -786,7 +760,6 @@ class XmlEditorGUI(QMainWindow):
             else :
                 field = Field(path.split("/")[-1],self.donnees_et_types[path][1].split(), path, self.donnees_et_types[path][0].split() )
                 self.dataAsField.append(field)
-                # print(field.name, field.type, field.path, field.value)
         
     def save(self):
         """
@@ -800,9 +773,6 @@ class XmlEditorGUI(QMainWindow):
         self.extractDataAndType()
         self.getDataAsField()
         
-        for i in range(len(self.dataAsField)):
-        #     if self.dataAsField[i].name == "toto":
-            print(self.dataAsField[i].name, self.dataAsField[i]._value, self.dataAsField[i].path)
         
         self.data_xml_structure.updateData(self.dataAsField)
         if (self.data_xml_structure.compare(self.specification_xml_structure, self.data_xml_structure) == True):
@@ -813,41 +783,3 @@ class XmlEditorGUI(QMainWindow):
     
     
 
-if __name__ == "__main__":
-    
-    # # Test your XML class
-    # xmlStrat = XmlManager()
-    # xml = DataType(xmlStrat,"example/FullSpecif.xml")
-    # Dataxml = DataType( xmlStrat,"example/Data_FullSpecif.xml")
-    # xml.readFile()
-    # Dataxml.readFile()
-    
-    # # for el in Dataxml.content.iter() :
-    # #     print(el.getroottree().getpath(el))
-    # data_empty = xml.createData()
-    # # data_empty.convert2File()
-
-    # field_list = xml.convert2Field(data_empty.content)
-
-    
-    
-    
-    # field1 = Field("Number", ["int"], ".../Number","")
-    # field2 = Field("Id", ["int"], ".../Id","")
-    # field3 = Field("Name", ["string", "string"],".../Name","")
-    # field4 = Field("Number", ["int"], "haha/el/Number","")
-    # field5 = Field("Id", ["int"], "haha/el/Id","")
-    # field6 = Field("Name", ["string"], "haha/el/Name","")
-    # field8 = Field("Number", ["int"], "héhé/el/Number","")
-    # field9 = Field("Id", ["int"], "héhé/el/Id","")
-    # field10 = Field("Arg", ["string"],".../Arg","")
-    # field11 = Field("AAAARRRRGG", ["Float","Float"],"hoho/el","")
-    # field12 = Field("Truc", ["string", "enum_SysCoGeo"],".../Truc","")
-    
-    # field7 = Field("SystemeDeCoordonnées", ["enum_SysCoGeo"], "num/nim/SystemeDeCoordonnées","")
-    # fields= [field1, field2,field3, field7, field4, field5, field6, field8, field9, field10, field12, field11]
-    
-    app = QApplication(sys.argv)
-    gui = XmlEditorGUI()
-    gui.show()
-    sys.exit(app.exec_())
