@@ -775,7 +775,7 @@ class XmlEditorGUI(QMainWindow):
                         for j in range(0,col):
                             typef = table[0][j][1]
                             name = table[0][j][0]
-                            value = [table[i][j]]
+                            value = table[i][j].split()
                             field = Field(name, typef, path, value )
                             self.dataAsField.append(field)
                             #print(field.name, field.value)
@@ -814,8 +814,8 @@ class XmlEditorGUI(QMainWindow):
         self.getDataAsField()
         
         # for i in range(len(self.dataAsField)):
-        #     if self.dataAsField[i].name == "NumCode":
-        #         print(self.dataAsField[i].value)
+        #     # if self.dataAsField[i].name == "NumCode":
+        #     print(self.dataAsField[i].name, self.dataAsField[i]._value)
         
         
         self.data_xml_structure.updateData(self.dataAsField)
