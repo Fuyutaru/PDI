@@ -165,6 +165,14 @@ class XmlEditorGUI(QMainWindow):
             QMessageBox.warning(self, 'Erreur', 'Le fichier de données XML contient des erreurs.')
     
     def deleteLayout(self):
+        """
+        Function deleting the layout of the window
+
+        Returns
+        -------
+        None.
+
+        """
         
         for button in self.findChildren(QPushButton):
             if button.objectName() != "Save" :
@@ -185,6 +193,14 @@ class XmlEditorGUI(QMainWindow):
             tablewidget.setParent(None)
         
     def addFieldData(self) :
+        """
+        Function generating the fields with the data obtained from the XML data file
+
+        Returns
+        -------
+        None.
+
+        """
         
         tableData = []
         tableRow = []
@@ -318,6 +334,14 @@ class XmlEditorGUI(QMainWindow):
         self.setLayout(self.mainLayout)
     
     def addFields(self):
+        """
+        Function generating the fields of the GUI from a XML specification file
+
+        Returns
+        -------
+        None.
+
+        """
         
         listFieldTable = []
         n = len(self.fields)
@@ -416,8 +440,33 @@ class XmlEditorGUI(QMainWindow):
         
     
     def addTable(self, name, path, types):
+        """
+        Function creating the table for the GUI
+
+        Parameters
+        ----------
+        name : string
+            name of the table
+        path : string
+            path of the table in the tree
+        types : list
+            types of the data in the table
+
+        Returns
+        -------
+        None.
+
+        """
         
         def addLine():
+            """
+            Function to add an empty line in a table
+
+            Returns
+            -------
+            None.
+
+            """
             rowPosition = table.rowCount()
             table.insertRow(rowPosition)
         
@@ -451,8 +500,35 @@ class XmlEditorGUI(QMainWindow):
         self.mainLayout.addLayout(completeLayout)
         
     def addTableData(self, name, path, types, tableData):
+        """
+        Function creating a table in the GUI with the data from a XML data file
+
+        Parameters
+        ----------
+        name : string
+            name of the table
+        path : string
+            path of the table in the tree
+        types : list
+            types of the data in the table
+        tableData : list
+            data in the table.
+
+        Returns
+        -------
+        None.
+
+        """
         
         def addLine():
+            """
+            Function to add an empty line in the table
+
+            Returns
+            -------
+            None.
+
+            """
             rowPosition = table.rowCount()
             table.insertRow(rowPosition)
         
@@ -492,9 +568,34 @@ class XmlEditorGUI(QMainWindow):
         
     
     def addFieldTable(self, listFieldTable, path, name):
+        """
+        Function to create an empty table of fields
+
+        Parameters
+        ----------
+        listFieldTable : list
+            list of fields of the table
+        path : string
+            path of the table in the tree
+        name : string
+            name of the table
+
+        Returns
+        -------
+        None.
+
+        """
         
             
         def addLine():
+            """
+            Function to add an empty line in the table
+
+            Returns
+            -------
+            None.
+
+            """
             rowPosition = table.rowCount()
             table.insertRow(rowPosition)
             
@@ -528,9 +629,34 @@ class XmlEditorGUI(QMainWindow):
         
         
     def addFieldTableData(self, tableNameColumns, path, name, tableData):
+        """
+        Function to create a table of fields filled with data 
+
+        Parameters
+        ----------
+        listFieldTable : list
+            list of fields of the table
+        path : string
+            path of the table in the tree
+        name : string
+            name of the table
+
+        Returns
+        -------
+        None.
+
+        """
         
             
         def addLine():
+            """
+            Function to add an empty line in the table
+
+            Returns
+            -------
+            None.
+
+            """
             rowPosition = table.rowCount()
             table.insertRow(rowPosition)
             
@@ -578,7 +704,14 @@ class XmlEditorGUI(QMainWindow):
     
     
     def extraireDonneesEtTypes(self): 
-        """parcourt les diff widget de l'espace, on stock dans un dico le nom le widget et le type, retrouve tt les widget enfant de type QCheckBox"""
+        """
+        Create a dictionnary with the data saved from the GUI
+
+        Returns
+        -------
+        None.
+
+        """
         self.donnees_et_types = {}
         for edit in self.findChildren(QLineEdit):
             infos = edit.objectName().split()
@@ -620,6 +753,14 @@ class XmlEditorGUI(QMainWindow):
         
         
     def getDataAsField(self): 
+        """
+        Transform the dictionnary of data into a list of fields
+
+        Returns
+        -------
+        None.
+
+        """
         self.dataAsField = []
         
         for path in self.donnees_et_types :
@@ -658,28 +799,7 @@ class XmlEditorGUI(QMainWindow):
                 self.dataAsField.append(field)
                 # print(field.name, field.type, field.path, field.value)
         
-        
-    # def setDataInField(self):
-    #     list_t, list_d, a, b = self.data_xml_structure.strat.iterate(self.specification_xml_structure, self.data_xml_structure)
-        
-        
-    #     for data in list_d:
-    #         for field in self.fields:
-    #             if data[0] == ('Root' + field.path): #ATTENTION ROOT!!!
-    #                 if "el" in data[0]:
-    #                     if field.value == ['']:
-    #                         field.value = data[1]
-    #                     else:
-    #                         i = self.fields.index(field)
-    #                         new_field = Field(field.name, field.type, field.path, data[1])
-    #                         self.fields.insert(i+1, new_field)
-                            
-    #                 else:
-    #                     if isinstance(data[1],list):
-    #                         field.value = data[1]
-    #                     else:
-    #                         field.value = [data[1]]
-        
+
 
 if __name__ == "__main__":
     
