@@ -800,6 +800,7 @@ class XmlEditorGUI(QMainWindow):
         self.data_xml_structure.updateData(self.dataAsField)
         if (self.data_xml_structure.compare(self.specification_xml_structure, self.data_xml_structure) == True):
             self.data_xml_structure.convert2File()
+            QMessageBox.information(self, 'Succès', 'Votre fichier a été sauvegardé')
         else:
             QMessageBox.warning(self, 'Erreur', 'Un ou plusieurs champs contiennent des valeurs qui ne correspondent pas au bon type.')
     

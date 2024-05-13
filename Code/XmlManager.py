@@ -202,7 +202,7 @@ class XmlManager(Strategy):
         for d in list_d:
             for t in list_t:
                 if d[0] == t[0]:
-                    if d[1] != '':
+                    if d[1] != '' and d[1] != []:
                         if isinstance(t[1], list) and isinstance(d[1], list):
                             if len(t[1]) != len(d[1]):
                                 return False

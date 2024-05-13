@@ -2,10 +2,10 @@
 <Root>
    <Type>"MMVII_Serialization"</Type>
    <Version>"0.0.0"</Version>
-   <Data><FullSpecifTarget><BitEncoding><Specifs><hihi>True</hihi>
-               <hoho>False</hoho>
+   <Data><FullSpecifTarget><BitEncoding><Specifs><hihi></hihi>
+               <hoho></hoho>
                <coco></coco>
-               <toto>"IGNIndoor"</toto>
+               <toto>"IGNIndoor" "IGNIndoor"</toto>
                <Type>"IGNIndoor"</Type>
                <NbBits></NbBits>
                <FreqCircEq></FreqCircEq>
