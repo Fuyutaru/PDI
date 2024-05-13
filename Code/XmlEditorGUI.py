@@ -2,7 +2,7 @@
 """
 Created on Tue Apr 30 11:53:04 2024
 
-@author: Svetie
+@authors: Maëlle, Laurie, Zijian
 """
 
 
