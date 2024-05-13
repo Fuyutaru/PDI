@@ -1,4 +1,3 @@
-
 class DataType():
     
     def __init__(self, strat, filename):

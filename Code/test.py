@@ -39,12 +39,12 @@ if __name__ == "__main__":
     data_empty.convert2File()
 
     field_list = xml.convert2Field(Dataxml_fin.content)
-    # for i in range (len(field_list)) :
-    #     print(field_list[i].name, field_list[i].path)
+    for i in range (len(field_list)) :
+        print(field_list[i].path)
     
-    data_empty.updateData(field_list)
-    data_empty.convert2File()
-    
+    Dataxml_ini.updateData(field_list)
+    Dataxml_ini.convert2File()
+
     # xpath_expression = "./Data/FullSpecifTarget/BitEncoding/Specifs/Type"
     # root = xml.content.getroot()
     # r = root.xpath("./Data")

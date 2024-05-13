@@ -1,4 +1,3 @@
-
 class Field():
     def __init__(self, name, type, path, value):
         self.name = name
