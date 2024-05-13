@@ -336,14 +336,22 @@ class XmlEditorGUI(QMainWindow):
                         
             elif pathFieldSplit[-2] == "el" :
                 if i == n-1 or (pathFieldSplit[:-1] != pathFieldSplitNext[:-1]) :
-                    listFieldTable.append([pathFieldSplit[-1], typeField[0]])
+                    typef = typeField[0]
+                    if len(typeField) > 1 :
+                        for i in range(1,len(typeField)):
+                            typef += " " + typeField[i]
+                    listFieldTable.append([pathFieldSplit[-1], typef])
                     name = pathFieldSplit[-3]
                     path = pathField[:-(len(pathFieldSplit[-1])+1)]
                     self.addFieldTable(listFieldTable, path, name)
                     listFieldTable = []
                     
                 else :
-                    listFieldTable.append([pathFieldSplit[-1], typeField[0]])
+                    typef = typeField[0]
+                    if len(typeField) > 1 :
+                        for i in range(1,len(typeField)):
+                            typef += " " + typeField[i]
+                    listFieldTable.append([pathFieldSplit[-1], typef ])
             
             elif len(typeField) != 1 :
                 name = QLabel(pathFieldSplit[-1])
