@@ -723,7 +723,10 @@ class XmlEditorGUI(QMainWindow):
     
         for combobox in self.findChildren(QComboBox):
             infos = combobox.objectName().split()
-            self.donnees_et_types[infos[0]] = (combobox.currentText(), infos[1])
+            if infos[0] in self.donnees_et_types :
+                self.donnees_et_types[infos[0]] = ( self.donnees_et_types[infos[0]][0]+ " " + combobox.currentText(),  self.donnees_et_types[infos[0]][1] + " " + infos[1])
+            else :
+                self.donnees_et_types[infos[0]] = (combobox.currentText(), infos[1])
 
         
         for tablewidget in self.findChildren(QTableWidget):
@@ -776,7 +779,8 @@ class XmlEditorGUI(QMainWindow):
                             typef = table[0][j][1]
                             name = table[0][j][0]
                             value = table[i][j].split()
-                            field = Field(name, typef, path, value )
+                            pathField = path + "/" + name
+                            field = Field(name, typef, pathField, value )
                             self.dataAsField.append(field)
                             #print(field.name, field.value)
                     
@@ -813,9 +817,9 @@ class XmlEditorGUI(QMainWindow):
         self.extractDataAndType()
         self.getDataAsField()
         
-        # for i in range(len(self.dataAsField)):
-        #     # if self.dataAsField[i].name == "NumCode":
-        #     print(self.dataAsField[i].name, self.dataAsField[i]._value)
+        for i in range(len(self.dataAsField)):
+        #     if self.dataAsField[i].name == "toto":
+            print(self.dataAsField[i].name, self.dataAsField[i]._value, self.dataAsField[i].path)
         
         
         self.data_xml_structure.updateData(self.dataAsField)
