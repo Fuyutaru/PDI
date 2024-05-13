@@ -76,6 +76,14 @@ class XmlEditorGUI(QMainWindow):
         
             
     def loadSpecificationXml(self):
+        """
+        Import an XML specification file
+
+        Returns
+        -------
+        None.
+
+        """
         
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de spécification XML', '', 'XML files (*.xml)')
         if path:
@@ -100,6 +108,14 @@ class XmlEditorGUI(QMainWindow):
             QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
 
     def loadDataXml(self):
+        """
+        Import an XML data file
+
+        Returns
+        -------
+        None.
+
+        """
         if self.specification_xml_structure == None :
             QMessageBox.warning(self, 'Erreur', 'Un fichier de spécification doit être chargé avant de charger un fichier de données')
         else :
