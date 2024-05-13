@@ -1,3 +1,0 @@
-Person Name : KKK
-Degree : MTech
-Age : 5

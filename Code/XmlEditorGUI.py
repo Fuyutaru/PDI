@@ -1,337 +1,853 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 27 10:31:07 2024
+Created on Tue Apr 30 11:53:04 2024
 
-@author: Laurie
+@author: Svetie
 """
+
+
 import sys
-import Champ
-from datetime import datetime
-import base64
 import xml.etree.ElementTree as ET
-from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QTextEdit, QMessageBox, QStatusBar, QVBoxLayout, QPushButton, QWidget, QHBoxLayout, QLabel
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon,  QStandardItemModel, QStandardItem
 
-import FileLoader
+from DataType import DataType
+from XmlManager import XmlManager
+from Enumeration import enum
+from Field import Field
+from XmlManager import XmlManager
 
 class XmlEditorGUI(QMainWindow):
-    def __init__(self):
+    def __init__(self): #Champs sera a retirer quand on aura la conversion
+                                #des fichiers XML en liste de champs
         super().__init__()
         self.specification_xml_path = None
         self.data_xml_path = None
         self.specification_xml_structure = None
-        self.initUI()
+        self.data_xml_structure = None
+        self.saveButton = QPushButton()
+        self.mainLayout = QVBoxLayout()
+        self.fields = None
+        
+        self.count = 0
+        
+        self.countTable = 0
+        
+        #TEST D'AJOUT DES CHAMPS
+   
+    
 
-    def initUI(self):
+    
         self.setWindowTitle('Éditeur de Fichiers XML')
         self.setGeometry(100, 100, 800, 600)
-        self.setWindowIcon(QIcon('./icone.png')) 
+        self.setWindowIcon(QIcon('./icone.png'))
 
-        # Barre de menu améliorée
+        # Barre de menu
         menuBar = self.menuBar()
         menuBar.setStyleSheet("QMenuBar { background-color: #e1e1e1; color: #333333; }")
         fileMenu = menuBar.addMenu('&Fichier')
 
-        # Actions du menu avec des icônes
+        # Actions du menu
         loadSpecAction = QAction(QIcon('./icone.png'), 'Charger Spécification', self)
         loadSpecAction.triggered.connect(self.loadSpecificationXml)
         fileMenu.addAction(loadSpecAction)
 
-        loadDataAction = QAction(QIcon('./icone.png'),'Charger Données XML', self)
+        loadDataAction = QAction(QIcon('./icone.png'), 'Charger Données XML', self)
         loadDataAction.triggered.connect(self.loadDataXml)
         fileMenu.addAction(loadDataAction)
 
-
-        self.textEdit = QTextEdit(self)
-        self.textEdit.setStyleSheet("QTextEdit {border: 1px solid black; background-color: #f0f0f0;}")
-
-        # Boutons avec des icônes et des tooltips
+        # Buttons
         saveButton = QPushButton(QIcon('./icon.png'), 'Sauvegarder', self)
-        saveButton.clicked.connect(self.saveDataXml)
+        #saveButton.clicked.connect(self.saveDataXml)
+        saveButton.clicked.connect(self.save)
         saveButton.setToolTip('Sauvegarder le fichier XML')
+        saveButton.setObjectName("Save")
 
-        # Layout principal
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.textEdit)
+        # Layouts
+        self.mainLayout = QVBoxLayout()
+        # self.mainLayout.addWidget(self.textEdit)
+        
 
-        # Layout pour les boutons
         buttonsLayout = QHBoxLayout()
         buttonsLayout.addWidget(saveButton)
-        mainLayout.addLayout(buttonsLayout)
+        self.mainLayout.addLayout(buttonsLayout)
+        
 
-        # Widget central
         centralWidget = QWidget()
-        centralWidget.setLayout(mainLayout)
+        centralWidget.setLayout(self.mainLayout)
         self.setCentralWidget(centralWidget)
 
-        # Barre de statut
+        # Status Bar
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)
         
-        
-             
-    def buildTree(self, parent, element):
-            item = QStandardItem(element.tag)
-            item.setIcon(QIcon("./icon.png"))  
-            item.setEditable(False) 
-            parent.appendRow(item)
-    
-            for attrib_name, attrib_value in element.attrib.items():
-                attrib_item = QStandardItem(f"{attrib_name}='{attrib_value}'")
-                attrib_item.setEditable(True)  # Rendre les attributs éditables
-                item.appendRow(attrib_item)
-    
-            for child in element:
-                self.buildTree(item, child)
-    
+            
     def loadSpecificationXml(self):
+        #met la fct de tchek/verif la direct
         path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de spécification XML', '', 'XML files (*.xml)')
         if path:
-            try:
-                self.specification_xml_path = path
-                tree = ET.parse(self.specification_xml_path)
-                self.specification_xml_structure = self.analyzeSpecification(tree)
-                QMessageBox.information(self, 'Succès', 'Fichier de spécification chargé avec succès!')
-            except ET.ParseError as e:
-                QMessageBox.warning(self, 'Erreur', 'Le fichier de spécification XML est invalide.\n' + str(e))
-            except Exception as e:
-                QMessageBox.warning(self, 'Erreur', 'Une erreur est survenue lors du chargement du fichier.\n' + str(e))
+            self.specification_xml_path = path
+            tree = ET.parse(self.specification_xml_path)
+            strat = XmlManager()
+            # self.specification_xml_structure = dh.analyzeSpecification(tree)
+            if (strat.verif(tree) == True):
+                specif = DataType(strat, self.specification_xml_path)
+                specif.readFile()
+                self.specification_xml_structure = specif
+                data_empty = self.specification_xml_structure.createData()
+                self.data_xml_structure = data_empty
+                self.fields = self.specification_xml_structure.convert2Field(data_empty.content)
+                if self.count > 0 :
+                    self.deleteLayout()
+                self.addFields()
+                self.count += 1
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
+        else:
+            QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de spécification.')
 
-    
-
-    def analyzeSpecification(self, xml_tree):
-        specification = {}
-        
-        for element in xml_tree.getroot():
-            element_name = element.attrib.get('name')
-            element_type = element.attrib.get('type', 'string') 
-            children = {}
-            for child in element:
-                child_name = child.tag
-                child_attribs = {attr_name: attr_value for attr_name, attr_value in child.attrib.items()}
-            
-                child_constraints = {
-                    'type': child_attribs.get('type', 'string'),
-                    'required': child_attribs.get('required', 'false').lower() == 'true',
-                  
-                }
-                
-                children[child_name] = child_constraints
-            
-            specification[element_name] = {
-                'type': element_type,
-                'children': children,
-            }
-    
-        return specification
-    
-    def newDataXml(self):
-        
-        if self.specification_xml_structure is None:
-            self.statusBar.showMessage("Veuillez d'abord charger un fichier de spécification XML.", 5000)
-            return
-        
-        if self.specification_xml_structure is None:
-            QMessageBox.warning(self, 'Erreur', 'Veuillez d abord charger un fichier de spécification XML.')
-            return
-        
-        self.textEdit.clear()
-        root_spec = next(iter(self.specification_xml_structure.values()))
-        root_element = ET.Element(root_spec['type'])
-        
-        for child_name, child_spec in root_spec['children'].items():
-            child_element = ET.SubElement(root_element, child_name)
-        xml_str = ET.tostring(root_element, encoding='unicode')
-        self.textEdit.setText(xml_str)
-        self.data_xml_path = None
-        
-        
- 
-        
     def loadDataXml(self):
+        if self.specification_xml_structure == None :
+            QMessageBox.warning(self, 'Erreur', 'Un fichier de spécification doit être chargé avant de charger un fichier de données')
+        else :
             path, _ = QFileDialog.getOpenFileName(self, 'Charger un fichier de données XML', '', 'XML files (*.xml)')
             if path:
                 self.data_xml_path = path
-                self.loader = FileLoader(path)
-                self.loader.fileLoaded.connect(self.onFileLoaded)
-                self.loader.start()
                 
+                # self.loader = FileLoader(path)
+                # self.loader.fileLoaded.connect(self.onFileLoaded)
+                # self.loader.start()
+                
+                tree = ET.parse(self.data_xml_path)
+                strat = XmlManager()
+            
+                if (strat.verif(tree) == True):
+                    data = DataType(strat, self.data_xml_path)
+                    data.readFile()
+                    if (data.compare(self.specification_xml_structure, data) == True):
+                        self.data_xml_structure = data
+                        # data_empty = self.data_xml_structure.createData()
+                        self.fields = self.specification_xml_structure.convert2Field(data.content)
 
-    def onFileLoaded(self, data):
-        self.textEdit.setText(data)
-        QMessageBox.information(self, 'Succès', 'Fichier de données XML chargé avec succès!')
-        self.textEdit.setText(data)
-        self.treeModel.clear()
-        xml_root = ET.fromstring(data)
-        self.buildTree(self.treeModel.invisibleRootItem(), xml_root)
-        self.treeView.expandAll()
-        
-
-    def extraireDonneesEtTypes(self): 
-        """parcourt les diff widget de l'espace, on stock dans un dico le nom le widget et le type, retrouve tt les widget enfant de type QCheckBox"""
-        donnees_et_types = {}
-            for Champ in self.findChildren(QLineEdit):
-                dataType = getattr(Champ, 'dataType', 'str')  
-                donnees_et_types[Champ.objectName()] = (Champ.text(), dataType)
-    
-            for Champ in self.findChildren(QCheckBox):
-                dataType = 'boolean'
-                donnees_et_types[Champ.objectName()] = (Champ.isChecked(), dataType)
-    
-            for Champ in self.findChildren(QComboBox):
-                dataType = getattr(Champ, 'dataType', 'enum')
-                donnees_et_types[Champ.objectName()] = (Champ.currentText(), dataType)
-    
-            for Champ in self.findChildren(QDateTimeEdit):
-                if getattr(Champ, 'dataType', 'datetime') == 'date':
-                    donnees_et_types[Champ.objectName()] = (Champ.date().toString('dd/MM/yyyy'), 'date')
+                        
+                        self.deleteLayout()
+                        self.addFieldData()
+                    
+                        # print(self.fields[4].type)
+                        # print(self.fields[4].value)
+                    
+                        QMessageBox.information(self, 'Succès', 'Fichier de données chargé avec succès!')
+                    else:
+                        QMessageBox.information(self, 'Erreur', 'Le fichier de données ne correspond pas au fichier de spécification!')
+                    
                 else:
-                    donnees_et_types[Champ.objectName()] = (Champ.dateTime().toString('MM-dd-yyyy HH:mm:ss'), 'datetime')
-    
-            for Champ in self.findChildren(QTextEdit):  
-                dataType = getattr(Champ, 'dataType', 'str')
-                if dataType == 'list':
-                    list_values = [value.strip() for value in Champ.toPlainText().split(',')]
-                    donnees_et_types[Champ.objectName()] = (list_values, 'list')
-                elif dataType == 'binary':
-                    try:
-                        base64_encoded_data = base64.b64encode(Champ.toPlainText().encode())
-                        donnees_et_types[Champ.objectName()] = (base64_encoded_data.decode('utf-8'), 'binary')
-                    except Exception as e:
-                        print(f"Erreur lors de l'encodage en base64 : {str(e)}")
+                    QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de données.')
+            else:
+                QMessageBox.warning(self, 'Erreur', 'Erreur de chargement du fichier de données.')
+            
 
-            for Champ in self.findChildren(QLineEdit):
-                dataType = getattr(Champ, 'dataType', 'str')
-                if dataType in ['id', 'idref']:
-                    donnees_et_types[Champ.objectName()] = (Champ.text(), dataType)
     
-            return donnees_et_types
+    def deleteLayout(self):
+        """
+        Function deleting the layout of the window
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        for button in self.findChildren(QPushButton):
+            if button.objectName() != "Save" :
+                button.setParent(None)
+        
+        for label in self.findChildren(QLabel):
+            label.setParent(None)
+        
+        for edit in self.findChildren(QLineEdit):
+            edit.setParent(None)
     
+        for combobox in self.findChildren(QComboBox):
+
+            combobox.setParent(None)
+        
+        for tablewidget in self.findChildren(QTableWidget):
+            
+            tablewidget.setParent(None)
+        
+    def addFieldData(self) :
+        """
+        Function generating the fields with the data obtained from the XML data file
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        tableData = []
+        tableRow = []
+        tableNameColumns = []
+        tableRowPath = ""
+        listFieldTable = []
+        n = len(self.fields)
+        count = 0
+        for i in range(n):
+            #print(self.fields[i].name, self.fields[i].path,self.fields[i].value)
+            typeField = self.fields[i].type
+            pathField = self.fields[i].path
+            valueField = self.fields[i].value
+            nameField = self.fields[i].name
+            pathFieldSplit = self.fields[i].path.split("/")
+            pathFieldSplitNext = []
+            #print(pathFieldSplit)
+            
+            
+            
+            if i < n-1 :
+                pathFieldSplitNext = self.fields[i+1].path.split("/")
+            
+            if pathFieldSplit[-1] == "el" :
+                tableData.append(valueField)
+                if pathFieldSplit != pathFieldSplitNext or i == n-1 :
+                    self.addTableData(pathFieldSplit[-2], pathField, typeField, tableData) 
+                    tableData=[]
+                        
+            elif pathFieldSplit[-2] == "el":
+                pathFieldWithout = pathFieldSplit
+                pathFieldWithout[-2] = pathFieldSplit[-2][:2]
+                if tableRowPath == pathFieldWithout:
+                    tableData.append(tableRow)
+                    tableRow = []
+                if count == 0 :
+                    tableRowPath = pathFieldWithout
+                    count = 1
+                if not ((nameField, typeField) in tableNameColumns) :
+                    tableNameColumns.append((nameField, typeField))
+                tableRow.append(valueField)
+                
+                # test = False
+                # if pathFieldSplit[:-2] != pathFieldSplitNext[:-2] or (pathFieldSplit[-2][:2] !=):
+                #     test = True
+                
+                #print(pathFieldSplit[:-1], pathFieldSplitNext[:-1])
+                if i == n-1 or (pathFieldSplit[:-2] != pathFieldSplitNext[:-2]):
+                    tableData.append(tableRow)
+                    name = pathFieldSplit[-3]
+                    path = pathField[:-(len(pathFieldSplit[-1])+1)]
+                    self.addFieldTableData(tableNameColumns, path, name, tableData)
+                    tableData = []
+                    count = 0
+                
+            
+            elif len(typeField) != 1 :
+                name = QLabel(pathFieldSplit[-1])
+                multiTypeLayout = QHBoxLayout()
+                multiTypeLayout.addWidget(name)
+                for j in range(len(typeField)):
+                    t = typeField[j]
+                    v = valueField[j]
+                    if t.strip('"') in enum.enumDict :
+                        t = t.strip('"')
+                        enumComboBox = QComboBox()
+                        enumComboBox.addItems(enum.enumDict[t])
+                        enumComboBox.setObjectName(pathField +  " " + t)
+                        enumComboBox.setCurrentText(v)
+                        enumLayout = QHBoxLayout()
+                        enumLayout.addWidget(enumComboBox)
+                        typeEnum = QLabel("(" + t + ")")
+                        enumLayout.addWidget(typeEnum)
+                        multiTypeLayout.addLayout(enumLayout)
+                    else :
+                        fieldLayout = QHBoxLayout()
+                        field = QLineEdit()
+                        field.setObjectName(pathField + " " + t)
+                        field.setText(v)
+                        fieldLayout.addWidget(field)
+                        typeField2 = QLabel("(" + t + ")")
+                        fieldLayout.addWidget(typeField2)
+                        multiTypeLayout.addLayout(fieldLayout)
+                        
+                self.mainLayout.addLayout(multiTypeLayout)
+                
+                        
+                        
+            
+            elif typeField[0].strip('"') in enum.enumDict :
+                t = typeField[0].strip('"')
+                v = valueField[0]
+                enumComboBox = QComboBox()
+                enumComboBox.addItems(enum.enumDict[t])
+                enumComboBox.setObjectName(pathField + " " + t)
+                enumComboBox.setCurrentText(v)
+                enumLayout = QHBoxLayout()
+                nom = QLabel(pathFieldSplit[-1])
+                enumLayout.addWidget(nom)
+                enumLayout.addWidget(enumComboBox)
+                typeEnum = QLabel("(" + t + ")")
+                enumLayout.addWidget(typeEnum)
+                self.mainLayout.addLayout(enumLayout)
+            
+            
+            else :
+                fieldLayout = QHBoxLayout()
+                v = valueField[0]
+                nom = QLabel(pathFieldSplit[-1])
+                field = QLineEdit()
+                field.setObjectName(pathField + " " + typeField[0])
+                field.setText(v)
+                fieldLayout.addWidget(nom)
+                fieldLayout.addWidget(field)
+                typeField2 = QLabel("(" + typeField[0] + ")")
+                fieldLayout.addWidget(typeField2)
+                self.mainLayout.addLayout(fieldLayout)
+        
+        scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        widget = QWidget()
+        self.mainLayout.addStretch()
+        widget.setLayout(self.mainLayout)
+        
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+
+        self.setCentralWidget(scroll)
+        
+        self.setLayout(self.mainLayout)
+    
+    def addFields(self):
+        """
+        Function generating the fields of the GUI from a XML specification file
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        listFieldTable = []
+        n = len(self.fields)
+        for i in range(n):
+            #print(self.fields[i].name, self.fields[i].path)
+            typeField = self.fields[i].type
+            pathField = self.fields[i].path
+            pathFieldSplit = self.fields[i].path.split("/")
+            pathFieldSplitNext = []
+            
+            
+            if i < n-1 :
+                pathFieldSplitNext = self.fields[i+1].path.split("/")
+            
+            if pathFieldSplit[-1] == "el" :
+                self.addTable(pathFieldSplit[-2], pathField, typeField)            
+                        
+            elif pathFieldSplit[-2] == "el" :
+                if i == n-1 or (pathFieldSplit[:-1] != pathFieldSplitNext[:-1]) :
+                    listFieldTable.append([pathFieldSplit[-1], typeField[0]])
+                    name = pathFieldSplit[-3]
+                    path = pathField[:-(len(pathFieldSplit[-1])+1)]
+                    self.addFieldTable(listFieldTable, path, name)
+                    listFieldTable = []
+                    
+                else :
+                    listFieldTable.append([pathFieldSplit[-1], typeField[0]])
+            
+            elif len(typeField) != 1 :
+                name = QLabel(pathFieldSplit[-1])
+                multiTypeLayout = QHBoxLayout()
+                multiTypeLayout.addWidget(name)
+                for t in typeField :
+                    if t.strip('"') in enum.enumDict :
+                        t = t.strip('"')
+                        enumComboBox = QComboBox()
+                        enumComboBox.addItems(enum.enumDict[t])
+                        enumComboBox.setObjectName(pathField +  " " + t)
+                        enumLayout = QHBoxLayout()
+                        enumLayout.addWidget(enumComboBox)
+                        typeEnum = QLabel("(" + t + ")")
+                        enumLayout.addWidget(typeEnum)
+                        multiTypeLayout.addLayout(enumLayout)
+                    else :
+                        fieldLayout = QHBoxLayout()
+                        field = QLineEdit()
+                        field.setObjectName(pathField + " " + t)
+                        fieldLayout.addWidget(field)
+                        typeField = QLabel("(" + t + ")")
+                        fieldLayout.addWidget(typeField)
+                        multiTypeLayout.addLayout(fieldLayout)
+                        
+                self.mainLayout.addLayout(multiTypeLayout)
+                
+                        
+                        
+            
+            elif typeField[0].strip('"') in enum.enumDict :
+                t = typeField[0].strip('"')
+                enumComboBox = QComboBox()
+                enumComboBox.addItems(enum.enumDict[t])
+                enumComboBox.setObjectName(pathField + " " + t)
+                enumLayout = QHBoxLayout()
+                nom = QLabel(pathFieldSplit[-1])
+                enumLayout.addWidget(nom)
+                enumLayout.addWidget(enumComboBox)
+                typeEnum = QLabel("(" + t + ")")
+                enumLayout.addWidget(typeEnum)
+                self.mainLayout.addLayout(enumLayout)
+            
+            
+            else :
+                fieldLayout = QHBoxLayout()
+                nom = QLabel(pathFieldSplit[-1])
+                field = QLineEdit()
+                field.setObjectName(pathField + " " + typeField[0])
+                fieldLayout.addWidget(nom)
+                fieldLayout.addWidget(field)
+                typeField = QLabel("(" + typeField[0] + ")")
+                fieldLayout.addWidget(typeField)
+                self.mainLayout.addLayout(fieldLayout)
+        
+        scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        widget = QWidget()
+        self.mainLayout.addStretch()
+        widget.setLayout(self.mainLayout)
+        
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(widget)
+
+        self.setCentralWidget(scroll)
+        
+        self.setLayout(self.mainLayout)
+        
+    
+    def addTable(self, name, path, types):
+        """
+        Function creating the table for the GUI
+
+        Parameters
+        ----------
+        name : string
+            name of the table
+        path : string
+            path of the table in the tree
+        types : list
+            types of the data in the table
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        def addLine():
+            """
+            Function to add an empty line in a table
+
+            Returns
+            -------
+            None.
+
+            """
+            rowPosition = table.rowCount()
+            table.insertRow(rowPosition)
+        
+        addButton = QPushButton("+")
+        addButton.clicked.connect(addLine)
+        
+        
+        tableName = QLabel(name)
+        
+        table = QTableWidget()
+        table.setObjectName(path + " el")
+        
+        n = len(types)
+        table.setRowCount(1)
+        table.setColumnCount(n)
+        columns = []
+        for i in range(n) :
+            columns.append("(" + types[i] + ")")
+        table.setHorizontalHeaderLabels(columns)
+        
+        table.move(0, 0)
+        
+        completeLayout = QVBoxLayout()
+        
+        tabLayout = QHBoxLayout()
+        tabLayout.addWidget(table)
+        tabLayout.addWidget(addButton)
+        
+        completeLayout.addWidget(tableName)
+        completeLayout.addLayout(tabLayout)
+        self.mainLayout.addLayout(completeLayout)
+        
+    def addTableData(self, name, path, types, tableData):
+        """
+        Function creating a table in the GUI with the data from a XML data file
+
+        Parameters
+        ----------
+        name : string
+            name of the table
+        path : string
+            path of the table in the tree
+        types : list
+            types of the data in the table
+        tableData : list
+            data in the table.
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        def addLine():
+            """
+            Function to add an empty line in the table
+
+            Returns
+            -------
+            None.
+
+            """
+            rowPosition = table.rowCount()
+            table.insertRow(rowPosition)
+        
+        addButton = QPushButton("+")
+        addButton.clicked.connect(addLine)
+        
+        
+        tableName = QLabel(name)
+        
+        table = QTableWidget()
+        table.setObjectName(path + " el")
+        
+        n = len(types)
+        l = len(tableData)
+        table.setRowCount(l)
+        table.setColumnCount(n)
+        columns = []
+        for i in range(n) :
+            columns.append("(" + types[i] + ")")
+        table.setHorizontalHeaderLabels(columns)
+        
+        
+        for i in range(l):
+            for j in range(n):
+                item = QTableWidgetItem(tableData[i][j])
+                table.setItem(i,j,item)
+        
+        completeLayout = QVBoxLayout()
+        
+        tabLayout = QHBoxLayout()
+        tabLayout.addWidget(table)
+        tabLayout.addWidget(addButton)
+        
+        completeLayout.addWidget(tableName)
+        completeLayout.addLayout(tabLayout)
+        self.mainLayout.addLayout(completeLayout)
+        
+    
+    def addFieldTable(self, listFieldTable, path, name):
+        """
+        Function to create an empty table of fields
+
+        Parameters
+        ----------
+        listFieldTable : list
+            list of fields of the table
+        path : string
+            path of the table in the tree
+        name : string
+            name of the table
+
+        Returns
+        -------
+        None.
+
+        """
+        
+            
+        def addLine():
+            """
+            Function to add an empty line in the table
+
+            Returns
+            -------
+            None.
+
+            """
+            rowPosition = table.rowCount()
+            table.insertRow(rowPosition)
+            
+        
+        addButton = QPushButton("+")
+        addButton.clicked.connect(addLine)
+        
+        tableName = QLabel(name)
+        
+        table = QTableWidget()
+        table.setObjectName(path + " el")
+        
+        n = len(listFieldTable)
+        table.setRowCount(1)
+        table.setColumnCount(n)
+        columns = []
+        for i in range(n) :
+            columns.append(listFieldTable[i][0]+ "\n(" + listFieldTable[i][1]+")")
+        table.setHorizontalHeaderLabels(columns)
+        
+        
+        completeLayout = QVBoxLayout()
+        
+        tabLayout = QHBoxLayout()
+        tabLayout.addWidget(table)
+        tabLayout.addWidget(addButton)
+        
+        completeLayout.addWidget(tableName)
+        completeLayout.addLayout(tabLayout)
+        self.mainLayout.addLayout(completeLayout)
+        
+        
+    def addFieldTableData(self, tableNameColumns, path, name, tableData):
+        """
+        Function to create a table of fields filled with data 
+
+        Parameters
+        ----------
+        listFieldTable : list
+            list of fields of the table
+        path : string
+            path of the table in the tree
+        name : string
+            name of the table
+
+        Returns
+        -------
+        None.
+
+        """
+        
+            
+        def addLine():
+            """
+            Function to add an empty line in the table
+
+            Returns
+            -------
+            None.
+
+            """
+            rowPosition = table.rowCount()
+            table.insertRow(rowPosition)
+            
+        
+        addButton = QPushButton("+")
+        addButton.clicked.connect(addLine)
+        
+        tableName = QLabel(name)
+        
+        table = QTableWidget()
+        table.setObjectName(path + " el")
+        
+        n = len(tableNameColumns)
+        l = len(tableData)
+        table.setRowCount(l)
+        table.setColumnCount(n)
+        columns = []
+        for i in range(n) :
+            typeColumns = tableNameColumns[i][1][0]
+            if len(tableNameColumns[i][1]) > 1 :
+                for j in range(1, len(tableNameColumns[i][1])):
+                    typeColumns += " " + tableNameColumns[i][1][j]
+            columns.append(tableNameColumns[i][0]+ "\n(" + typeColumns +")")
+        table.setHorizontalHeaderLabels(columns)
+        
+        
+        for i in range(l):
+            for j in range(n):
+                data = tableData[i][j][0]
+                if len(tableData[i][j]) > 0 :
+                    for k in range(1, len(tableData[i][j])):
+                        data += " " + tableData[i][j][k]
+                item = QTableWidgetItem(data)
+                table.setItem(i,j,item)
+        
+        completeLayout = QVBoxLayout()
+        
+        tabLayout = QHBoxLayout()
+        tabLayout.addWidget(table)
+        tabLayout.addWidget(addButton)
+        
+        completeLayout.addWidget(tableName)
+        completeLayout.addLayout(tabLayout)
+        self.mainLayout.addLayout(completeLayout)
+    
+    
+    def extractDataAndType(self): 
+        """
+        Create a dictionnary with the data saved from the GUI
+
+        Returns
+        -------
+        None.
+
+        """
+        self.donnees_et_types = {}
+        for edit in self.findChildren(QLineEdit):
+            infos = edit.objectName().split()
+            if infos[0] in self.donnees_et_types :
+                self.donnees_et_types[infos[0]] = ( self.donnees_et_types[infos[0]][0]+ " " + edit.text(),  self.donnees_et_types[infos[0]][1] + " " + infos[1])
+            else :
+                self.donnees_et_types[infos[0]] = (edit.text(), infos[1])
+    
+        for combobox in self.findChildren(QComboBox):
+            infos = combobox.objectName().split()
+            if infos[0] in self.donnees_et_types :
+                self.donnees_et_types[infos[0]] = ( self.donnees_et_types[infos[0]][0]+ " " + combobox.currentText(),  self.donnees_et_types[infos[0]][1] + " " + infos[1])
+            else :
+                self.donnees_et_types[infos[0]] = (combobox.currentText(), infos[1])
 
         
-      
-    def valider_valeur_entree(self, valeur_entree, type_attendu, enum_values=None):
-        if type_attendu not in ['int', 'float', 'str', 'boolean', 'date', 'datetime', 'time', 'enum', 'list', 'binary', 'id', 'idref']:
-            return False, "Type spécifié pour la validation non pris en charge."
-
-        try:
-            if type_attendu == 'int':
-                int(valeur_entree)
-                return True, "L'entrée est un entier valide."
-            elif type_attendu == 'float':
-                float(valeur_entree)
-                return True, "L'entrée est un flottant valide."
-            elif type_attendu == 'str':
-                return True, "L'entrée est une chaîne de caractères valide."
-            elif type_attendu == 'boolean':
-                if valeur_entree.lower() in ['true', 'false']:
-                    return True, "L'entrée est un booléen valide."
-                else:
-                    return False, "L'entrée n'est pas un booléen valide."
-            elif type_attendu == 'date':
-                datetime.strptime(valeur_entree, '%d/%m/%Y')
-                return True, "L'entrée est une date valide."
-            elif type_attendu == 'datetime':
-                datetime.strptime(valeur_entree, '%m-%d-%Y %I:%M:%S %p')
-                return True, "L'entrée est un datetime valide."
-            elif type_attendu == 'time':
-                datetime.strptime(valeur_entree, '%H:%M:%S')
-                return True, "L'entrée est une heure valide."
-            elif type_attendu == 'enum':
-                if enum_values is None or valeur_entree not in enum_values:
-                    return False, "L'entrée n'est pas une valeur autorisée."
-                return True, "L'entrée est une valeur enum valide."
-            elif type_attendu == 'list':
-                list_values = valeur_entree.split(',')
-                if not all(list_values):
-                    return False, "La liste contient des valeurs vides."
-                return True, "L'entrée est une liste valide."
-            elif type_attendu == 'binary':
-                base64.b64decode(valeur_entree)
-                return True, "L'entrée est une donnée binaire valide."
-            elif type_attendu in ['id', 'idref']:
-                return True, "L'entrée est un identifiant valide."
-
-        except ValueError as e:
-            return False, f"L'entrée n'est pas un(e) {type_attendu} valide(e). Message d'erreur : {str(e)}"
-
-        except Exception as e:
-            return False, f"Erreur inattendue lors de la validation : {str(e)}"
-        
-    #print(valider_entree("123", "int"))
-    #print(valider_entree("abc", "int"))  
-        
-
-    def on_save_button_clicked(self):
-        valeur_entree_int = self.lineEditInt.text()
-        valide_int, message_int = self.valider_valeur_entree(valeur_entree_int, 'int')
-        if not valide_int:
-            QMessageBox.warning(self, 'Erreur', message_int)
-            return
+        for tablewidget in self.findChildren(QTableWidget):
+            table = []
+            headers = []
+            for col in range(tablewidget.columnCount()) :
+                header = tablewidget.horizontalHeaderItem(col).text()
+                if "\n" in header :
+                    header2 = header.split("\n")
+                    nameColumn = header2[0]
+                    typeColumn = header2[1][1:-1]
+                    headers.append((nameColumn,typeColumn))
+                else :
+                    headers.append(header[1:-1])
+            table.append(headers)
+                
+            for row in range(tablewidget.rowCount()):
+                data = []
+                for col in range(tablewidget.columnCount()):
+                    it = tablewidget.item(row, col)
+                    text = it.text() if it is not None else ""
+                    data.append(text)
+                table.append(data)
+            self.donnees_et_types[tablewidget.objectName().split()[0]] = (table, 'el')
     
-        valeur_entree_float = self.lineEditFloat.text()
-        valide_float, message_float = self.valider_valeur_entree(valeur_entree_float, 'float')
-        if not valide_float:
-            QMessageBox.warning(self, 'Erreur', message_float)
-            return
-    
-        valeur_entree_str = self.lineEditStr.text()
-        valide_str, message_str = self.valider_valeur_entree(valeur_entree_str, 'str')
-        if not valide_str:  
-            QMessageBox.warning(self, 'Erreur', message_str)
-            return
-        self.saveDataXml()
+        
+        
+        
+    def getDataAsField(self): 
+        """
+        Transform the dictionnary of data into a list of fields
 
+        Returns
+        -------
+        None.
 
-    def saveDataXml(self):
-        if self.validateXml():
-            if not self.data_xml_path:
-                path, _ = QFileDialog.getSaveFileName(self, 'Enregistrer le fichier de données XML', '', 'XML files (*.xml)')
-                if path:
-                    self.data_xml_path = path
-            with open(self.data_xml_path, 'w') as file:
-                file.write(self.textEdit.toPlainText())
-            QMessageBox.information(self, 'Succès', 'Fichier de données XML enregistré avec succès!')
+        """
+        self.dataAsField = []
+        
+        for path in self.donnees_et_types :
+            if self.donnees_et_types[path][1] == "el" :
+                table = self.donnees_et_types[path][0]
+                print(table)
+                if type(table[0][0]) == tuple :
+                    col = len(table[0])
+                    row = len(table)
+                    for i in range(1,row):
+                        
+                        for j in range(0,col):
+                            typef = table[0][j][1]
+                            name = table[0][j][0]
+                            value = table[i][j].split()
+                            pathField = path + "/" + name
+                            field = Field(name, typef, pathField, value )
+                            self.dataAsField.append(field)
+                            #print(field.name, field.value)
+                    
+                    
+                    
+                else :
+                    col = len(table[0])
+                    typesTable = [table[0][0]]
+                    if col > 1 :
+                        for i in range(1, col):
+                            typesTable.append(table[0][i])
+                    row = len(table)
+                    for i in range(1,row):
+                        value = [table[i][0]]
+                        for j in range(1,col):
+                            value.append(table[i][j])
+                        field = Field(path.split("/")[-1],typesTable, path, value )
+                        self.dataAsField.append(field)
+                            
+            else :
+                field = Field(path.split("/")[-1],self.donnees_et_types[path][1].split(), path, self.donnees_et_types[path][0].split() )
+                self.dataAsField.append(field)
+                # print(field.name, field.type, field.path, field.value)
+        
+    def save(self):
+        """
+        Save data
+        
+        Returns
+        -------
+        None.
+        
+        """
+        self.extractDataAndType()
+        self.getDataAsField()
+        
+        for i in range(len(self.dataAsField)):
+        #     if self.dataAsField[i].name == "toto":
+            print(self.dataAsField[i].name, self.dataAsField[i]._value, self.dataAsField[i].path)
+        
+        self.data_xml_structure.updateData(self.dataAsField)
+        if (self.data_xml_structure.compare(self.specification_xml_structure, self.data_xml_structure) == True):
+            self.data_xml_structure.convert2File()
+            print("sauvé")
         else:
-            QMessageBox.warning(self, 'Erreur', 'Le fichier de données XML contient des erreurs.')
+            QMessageBox.warning(self, 'Erreur', 'Un ou plusieurs champs contiennent des valeurs qui ne correspondent pas au bon type.')
+    
+    
 
+if __name__ == "__main__":
+    
+    # # Test your XML class
+    # xmlStrat = XmlManager()
+    # xml = DataType(xmlStrat,"example/FullSpecif.xml")
+    # Dataxml = DataType( xmlStrat,"example/Data_FullSpecif.xml")
+    # xml.readFile()
+    # Dataxml.readFile()
+    
+    # # for el in Dataxml.content.iter() :
+    # #     print(el.getroottree().getpath(el))
+    # data_empty = xml.createData()
+    # # data_empty.convert2File()
 
+    # field_list = xml.convert2Field(data_empty.content)
 
-    def validateXml(self):
-        try:
-            root = ET.fromstring(self.textEdit.toPlainText())
-            if root.tag != self.specification_xml_structure['root_element_name']:
-                QMessageBox.warning(self, 'Erreur', f"L'élément racine {root.tag} ne correspond pas à la spécification.")
-                return False
-
-            def validate_element(element, spec):
-                if element.tag not in spec:
-                    QMessageBox.warning(self, 'Erreur', f"L'élément {element.tag} n'est pas autorisé selon la spécification.")
-                    return False
-                for attrib_name, attrib_value in element.attrib.items():
-                    if attrib_name not in spec[element.tag]['attributes']:
-                        QMessageBox.warning(self, 'Erreur', f"L'attribut {attrib_name} de {element.tag} n'est pas autorisé.")
-                        return False
-                for child in element:
-                    if not validate_element(child, spec[element.tag]['children']):
-                        return False
-                return True
-
-            if not validate_element(root, self.specification_xml_structure):
-                return False
-
-            QMessageBox.information(self, 'Succès', 'Le fichier XML est valide selon la spécification.')
-            return True
-        except ET.ParseError as e:
-            QMessageBox.warning(self, 'Erreur', f"Le XML est mal formé.\n{e}")
-            return False
-        except Exception as e:
-            QMessageBox.warning(self, 'Erreur', f"Une erreur est survenue pendant la validation.\n{e}")
-            return False
-        
-
-app = QApplication(sys.argv)
-gui = XmlEditorGUI()
-gui.show()
-sys.exit(app.exec_())
+    
+    
+    
+    # field1 = Field("Number", ["int"], ".../Number","")
+    # field2 = Field("Id", ["int"], ".../Id","")
+    # field3 = Field("Name", ["string", "string"],".../Name","")
+    # field4 = Field("Number", ["int"], "haha/el/Number","")
+    # field5 = Field("Id", ["int"], "haha/el/Id","")
+    # field6 = Field("Name", ["string"], "haha/el/Name","")
+    # field8 = Field("Number", ["int"], "héhé/el/Number","")
+    # field9 = Field("Id", ["int"], "héhé/el/Id","")
+    # field10 = Field("Arg", ["string"],".../Arg","")
+    # field11 = Field("AAAARRRRGG", ["Float","Float"],"hoho/el","")
+    # field12 = Field("Truc", ["string", "enum_SysCoGeo"],".../Truc","")
+    
+    # field7 = Field("SystemeDeCoordonnées", ["enum_SysCoGeo"], "num/nim/SystemeDeCoordonnées","")
+    # fields= [field1, field2,field3, field7, field4, field5, field6, field8, field9, field10, field12, field11]
+    
+    app = QApplication(sys.argv)
+    gui = XmlEditorGUI()
+    gui.show()
+    sys.exit(app.exec_())
