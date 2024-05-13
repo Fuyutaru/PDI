@@ -6,7 +6,7 @@ Created on Tue Apr 30 11:53:04 2024
 """
 
 
-import sys
+
 import xml.etree.ElementTree as ET
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
