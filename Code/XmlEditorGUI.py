@@ -743,7 +743,6 @@ class XmlEditorGUI(QMainWindow):
         for path in self.donnees_et_types :
             if self.donnees_et_types[path][1] == "el" :
                 table = self.donnees_et_types[path][0]
-                print(table)
                 if type(table[0][0]) == tuple :
                     col = len(table[0])
                     row = len(table)
@@ -793,7 +792,6 @@ class XmlEditorGUI(QMainWindow):
         self.data_xml_structure.updateData(self.dataAsField)
         if (self.data_xml_structure.compare(self.specification_xml_structure, self.data_xml_structure) == True):
             self.data_xml_structure.convert2File()
-            print("sauvé")
         else:
             QMessageBox.warning(self, 'Erreur', 'Un ou plusieurs champs contiennent des valeurs qui ne correspondent pas au bon type.')
     
