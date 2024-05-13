@@ -6,7 +6,7 @@
       <FullSpecifTarget>
          <BitEncoding>
             <Specifs>
-               <hihi></hihi>
+               <hihi>True</hihi>
                <hoho>False</hoho>
                <coco>0 True False</coco>
                <toto>"CERN" "IGNIndoor"</toto>
@@ -52,7 +52,39 @@
                   <NumCode>6 149</NumCode>
                   <Name>"006"</Name> <!--10101001000000-->
                </el>
-            <el><NumCode>7 153</NumCode><Name>"007"</Name></el><el><NumCode>8 159</NumCode><Name>"008"</Name></el><el><NumCode>9 163</NumCode><Name>"009"</Name></el><el><NumCode>10 165</NumCode><Name>"010"</Name></el><el><NumCode>11 169</NumCode><Name>"011"</Name></el><el><NumCode>12 175</NumCode><Name>"012"</Name></el><el><NumCode>13 177</NumCode><Name>"013"</Name></el><el><NumCode>14 183</NumCode><Name>"014"</Name></el><el><NumCode>15 187</NumCode><Name>"015"</Name></el></Encoding>
+               <el>
+                  <NumCode>7 153</NumCode>
+                  <Name>"007"</Name> <!--10011001000000-->
+               </el>
+               <el>
+                  <NumCode>8 159</NumCode>
+                  <Name>"008"</Name> <!--11111001000000-->
+               </el>
+               <el>
+                  <NumCode>9 163</NumCode>
+                  <Name>"009"</Name> <!--11000101000000-->
+               </el>
+               <el>
+                  <NumCode>10 165</NumCode>
+                  <Name>"010"</Name> <!--10100101000000-->
+               </el>
+               <el>
+                  <NumCode>11 169</NumCode>
+                  <Name>"011"</Name> <!--10010101000000-->
+               </el>
+               <el>
+                  <NumCode>12 175</NumCode>
+                  <Name>"012"</Name> <!--11110101000000-->
+               </el>
+               <el>
+                  <NumCode>13 177</NumCode>
+                  <Name>"013"</Name> <!--10001101000000-->
+               </el>
+               <el>
+                  <NumCode>14 183</NumCode>
+                  <Name>"014"</Name> <!--11101101000000-->
+               </el>
+            <el><NumCode>15 187</NumCode><Name>"015"</Name></el></Encoding>
          </BitEncoding>
          <GeometryCodedTarget>
             <Type>"CERN"</Type>

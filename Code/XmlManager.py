@@ -5,7 +5,6 @@ from Field import Field
 import copy
 from DataType import DataType
 from Enumeration import enum
-import os.path
 
 class XmlManager(Strategy):
     
@@ -68,19 +67,43 @@ class XmlManager(Strategy):
         return True
     
     def convert2File(self, tree, filename):
+        """
+        Function that convert the content of the object DataType into a XML file based on the filename.
+
+        Parameters
+        ----------
+        tree (etree): Content of the object DataType
+        filename (string): Filename of the file
+
+        Returns
+        -------
+        None.
+
+        """
         tree.write(filename, encoding="utf-8", xml_declaration=True, method="xml")
         
     
         
     def createData(self, tree, filename) :
+        """
+        Function that create the DataType 'data' associated with the specifications.
+        The content is a tree with the same strucutre as the specification tree but with empty leaves.
+
+        Parameters
+        ----------
+        tree (etree): Tree of specifications
+        filename (string): Filename of the DataType 'specifications'
+
+        Returns
+        -------
+        data_XML (DataType): The new object representing the data.
+
+        """
         
         data_tree = copy.deepcopy(tree)
         root_data_element = data_tree.find('Data')
-        if root_data_element is not None:
-            for element in root_data_element.iter():
-                element.text = ''
-        else :
-            print("Error: Root not find")
+        for element in root_data_element.iter() :
+            element.text = ''
             
         data_filename = filename[:-4] + "_data.xml"
         data_XML = DataType(self, data_filename)
@@ -131,8 +154,8 @@ class XmlManager(Strategy):
         Function used to compare data against a given data type.
 
         Args:
-            datatype (str or type): The data type against which data will be compared.
-            data (str or int or float or bool): The data to be compared.
+            datatype (str or type): The data type against which data will be compared
+            data (str or int or float or bool): The data to be compared
 
         Returns:
             bool: True if the data matches the specified data type, False otherwise.
@@ -263,7 +286,21 @@ class XmlManager(Strategy):
 
 
     def convert2Field (self, specTree, dataTree) :
-        # Liste pour stocker les objets créés
+        """
+        Function that creates a list of Field (python object) who represent each leaf of the data tree.
+        The attribute type of each Field are collected from the specification tree.
+
+        Parameters
+        ----------
+        specTree (etree): tree of specifications
+        dataTree (etree): tree of data, with the same structure that specTree with empty leaves or not
+
+        Returns
+        -------
+        field_list (list of Field): List of Field who represent each leaf of the data tree, with the type noted in the specifications tree.
+
+        """
+        
         field_list = []
         
         root_spec_element = specTree.find('Data')
@@ -273,15 +310,17 @@ class XmlManager(Strategy):
         # Parcours de l'arbre XML en sautant les premières lignes
         for specElement in root_spec_element.iter():
             
-            # Test pour sauter les commentaires
+            # This test permit to ignore comments in the XML
             if isinstance(specElement.tag, str) :
                 
+                # In situation of array (2nd elif), some specElement are already treated. We have to pass them.
                 if NbrChild > NbrPass :
                     NbrPass += 1
                     
                 else :
-                    # Création d'un objet pour chaque balise à la fin de branche
-                    if len(specElement) == 0 and specElement.tag != "el":  # Vérifier si c'est une balise finale (pas d'enfants)
+                    
+                    # Simple leaf (end of a branch).
+                    if len(specElement) == 0 and specElement.tag != "el" :
                         obj_name = specElement.tag
                         obj_type = [Type for Type in specElement.text.split(" ")]
                         obj_path = specElement.getroottree().getpath(specElement)[1:]
@@ -289,14 +328,14 @@ class XmlManager(Strategy):
                         dataElement = dataTree.find(obj_path[4:])
                         
                         if dataElement.text == None :
-                            obj_value = None
+                            obj_value = ['']
                         else :
                             obj_value = [val for val in dataElement.text.split(" ")]
                         
-                        # Créer l'objet et l'ajouter à la liste
                         field = Field(obj_name, obj_type, obj_path, obj_value)
                         field_list.append(field)
-                            
+                    
+                    # Simple <el> element.
                     elif len(specElement) == 0 and specElement.tag == "el" :
                         
                         obj_name = specElement.tag
@@ -304,29 +343,36 @@ class XmlManager(Strategy):
                         obj_path = specElement.getroottree().getpath(specElement)[1:]
                         
                         for elElement in dataTree.findall(obj_path[4:]):
+                            
+                            # This test permit to ignore comments in the XML
                             if isinstance(elElement.tag, str) :
                                 if dataElement.text == None :
-                                    obj_value = None
+                                    obj_value = ['']
                                 else :
                                     obj_value = [val for val in elElement.text.split(" ")]
                                 
                                 field = Field(obj_name, obj_type, obj_path, obj_value)
                                 field_list.append(field)
-                            
+                    
+                    # Complex <el> element.
                     elif len(specElement) != 0 and specElement.tag == "el" :
                 
-                        # Récupérer les types associés aux enfants de specElement
+                        # Get the types that are associated with specElement children
                         types = {child.tag: child.text for child in specElement}
                         el_path = specElement.getroottree().getpath(specElement)
                         
                         # Parcourir les éléments correspondants dans le fichier de données
                         for elElement in dataTree.findall(el_path[5:]):
                             
+                            # This test permit to ignore comments in the XML
                             if isinstance(elElement.tag, str) :
-                                
+                                # Reset                                
                                 NbrChild = 0
+                                NbrPass = 0
+                                
                                 for child in elElement:
                                     NbrChild += 1
+                                    
                                     if isinstance(child.tag, str) :
                                         obj_name = child.tag
                                         obj_path = child.getroottree().getpath(child)[1:]
@@ -335,7 +381,7 @@ class XmlManager(Strategy):
                                             obj_path = obj_path.split('[')[0] + obj_path.split(']')[1]
                                             
                                         if child.text == None :
-                                            obj_value = None
+                                            obj_value = ['']
                                         else :
                                             obj_value = [val for val in child.text.split(" ")]
                                         obj_type = [Type for Type in types[obj_name].split(" ")]
@@ -343,25 +389,41 @@ class XmlManager(Strategy):
                                         field = Field(obj_name, obj_type, obj_path, obj_value)
                                         field_list.append(field)
                     
-                 
         return field_list
         
     
     def updateData (self, dataTree, fieldList) :
-       
-        # Création du dictionnaire associant chaque chemin à une liste d'indices
+        """
+        Fonction that use the mofications wrote by the user, saved on the field list, to update the content of the data tree.
+
+        Parameters
+        ----------
+        dataTree (etree): tree of data, with the same structure that specTree with empty leaves or not
+        field_list (list of Field): List of Field at the output of the GUI, who represent each leaf of the data tree, or new leaves in the case of <el> element
+
+        Returns
+        -------
+        dataTree (etree): Data tree updated, with new leaves if needed.
+
+        """
+        
+        # Creation of the dictionary associating each path with a list of indices
         path_to_indices = {}
         
-        # Parcourir les objets Field et remplir le dictionnaire
         for index, field in enumerate(fieldList):
             path = field.path
             if path not in path_to_indices:
-                path_to_indices[path] = []  # Initialiser la liste vide pour ce chemin
-            path_to_indices[path].append(index)  # Ajouter l'indice à la liste correspondante
+                path_to_indices[path] = []
+            path_to_indices[path].append(index)
+        # The path is the same for each field who are in the array (<el> element).
+
 
         for obj_path in path_to_indices :
+            
+            # The first field of the list
             field0 = fieldList[path_to_indices[obj_path][0]]
     
+            # Not <el> element
             if field0.name != 'el' and obj_path[:-len(field0.name)][-4:] != '/el/' :
                 
                 new_value = field0._value
@@ -371,8 +433,10 @@ class XmlManager(Strategy):
                         new_text = new_text + value + " "
                     new_text = new_text[:-1]
                 
+                # The user cannot add a new line who is not <el>, so we don't have to test the existence of the leaf.
                 dataTree.find(obj_path[4:]).text = new_text
-                
+            
+            # Simple <el> element
             elif field0.name == 'el' :
                 
                 elList = path_to_indices[obj_path]
@@ -380,7 +444,10 @@ class XmlManager(Strategy):
                 NumberLeaves = len(elData)
                 i = 0
                 
+                # Changing the existing leaves.
                 for el in elData :
+                    
+                    # This test permit to ignore comments in the XML.
                     if isinstance(el.tag, str) :
                         new_value = fieldList[elList[i]]._value
                         new_text = ''
@@ -392,7 +459,7 @@ class XmlManager(Strategy):
                         el.text = new_text
                         i += 1
                 
-                
+                # If the user creates new lines on the array.
                 if len(elList) > NumberLeaves :
                     
                     existing_element = elData[-1]
@@ -413,15 +480,19 @@ class XmlManager(Strategy):
                         parent_element = existing_element.getparent()
                         parent_element.append(new_leaf)
             
+            # Complex <el> element
             else :
                 parent_path, childName = obj_path.split('/el/')
                 
                 childData = dataTree.findall(obj_path[4:])
-                
                 childList = path_to_indices[obj_path]
                 
                 i = 0
+                
+                # Changing the existing leaves.
                 for child in childData :
+                    
+                    # This test permit to ignore comments in the XML
                     if isinstance(child.tag, str) :
                         
                         if child.tag == childName :
@@ -435,15 +506,20 @@ class XmlManager(Strategy):
                             child.text = new_text
                             i += 1
                 
+                # If the user creates new lines on the array.
                 if len(childList) > i :
                     existing_parent = childData[0].getparent()
                     
                     j = i
                     for child in childList[j:] :
                         new_branch = etree.Element(existing_parent.tag, attrib=existing_parent.attrib)
+                        
                         for leaf in existing_parent :
+                            
+                            # This test permit to ignore comments in the XML
                             if isinstance(leaf.tag, str) :
                                 new_leaf = etree.Element(leaf.tag, attrib=leaf.attrib)
+                                
                                 if new_leaf.tag == childName :
                                     new_value = fieldList[childList[j]]._value
                                     new_text = ''
@@ -452,6 +528,7 @@ class XmlManager(Strategy):
                                             new_text = new_text + value + " "
                                         new_text = new_text[:-1]
                                     new_leaf.text = new_text
+                                    
                                 new_branch.append(new_leaf)
   
                         j+=1

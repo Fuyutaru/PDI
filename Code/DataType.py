@@ -1,4 +1,3 @@
-
 class DataType():
     
     def __init__(self, strat, filename):
@@ -16,12 +15,27 @@ class DataType():
         self.content = self.strat.readFile(self.filename)
     
     def convert2File(self):
+        """
+        Function that convert the content into a XML file based on the filename.
+
+        Returns
+        -------
+        None.
+
+        """
         self.strat.convert2File(self.content,self.filename)
         
-    def convert2Field(self, dataTree) :
-        return self.strat.convert2Field(self.content, dataTree)
-        
     def createData(self) :
+        """
+        Function that create the DataType 'data' associated with the specifications.
+        The content is a tree with the same strucutre as the specification tree but with empty leaves.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
         return self.strat.createData(self.content, self.filename)
     
     def verif(self):
@@ -46,6 +60,34 @@ class DataType():
         """
         return self.strat.compare(typeTree, dataTree)
     
+    def convert2Field(self, dataTree) :
+        """
+        
+
+        Parameters
+        ----------
+        dataTree (etree): tree of data, with the same structure that specTree with empty leaves or not
+        
+        Returns
+        -------
+        (List of Fields): List of Field who represent each leaf of the data tree, with the type noted in the specifications tree.
+
+        """
+        return self.strat.convert2Field(self.content, dataTree)
+    
     def updateData(self, fieldList) :
+        """
+        Fonction that use the mofications wrote by the user, saved on the field list, to update the content of the data tree.
+        It set the content of the object DataType 'data'.
+
+        Parameters
+        ----------
+        field_list (list of Field): List of Field at the output of the GUI, who represent each leaf of the data tree, or new leaves in the case of <el> element
+
+        Returns
+        -------
+        None.
+
+        """
         self.content = self.strat.updateData(self.content, fieldList)
 
