@@ -62,7 +62,7 @@ class XmlEditorGUI(QMainWindow):
         # Buttons
         saveButton = QPushButton(QIcon('./icon.png'), 'Sauvegarder', self)
         #saveButton.clicked.connect(self.saveDataXml)
-        saveButton.clicked.connect(self.extraireDonneesEtTypes)
+        saveButton.clicked.connect(self.save)
         saveButton.setToolTip('Sauvegarder le fichier XML')
         saveButton.setObjectName("Save")
 
@@ -98,6 +98,7 @@ class XmlEditorGUI(QMainWindow):
                 specif.readFile()
                 self.specification_xml_structure = specif
                 data_empty = self.specification_xml_structure.createData()
+                self.data_xml_structure = data_empty
                 self.fields = self.specification_xml_structure.convert2Field(data_empty.content)
                 if self.count > 0 :
                     self.deleteLayout()
@@ -210,7 +211,7 @@ class XmlEditorGUI(QMainWindow):
         n = len(self.fields)
         count = 0
         for i in range(n):
-            print(self.fields[i].name, self.fields[i].path,self.fields[i].value)
+            #print(self.fields[i].name, self.fields[i].path,self.fields[i].value)
             typeField = self.fields[i].type
             pathField = self.fields[i].path
             valueField = self.fields[i].value
@@ -703,7 +704,7 @@ class XmlEditorGUI(QMainWindow):
         self.mainLayout.addLayout(completeLayout)
     
     
-    def extraireDonneesEtTypes(self): 
+    def extractDataAndType(self): 
         """
         Create a dictionnary with the data saved from the GUI
 
@@ -748,8 +749,7 @@ class XmlEditorGUI(QMainWindow):
                 table.append(data)
             self.donnees_et_types[tablewidget.objectName().split()[0]] = (table, 'el')
     
-        print(self.donnees_et_types)
-        self.getDataAsField()
+        
         
         
     def getDataAsField(self): 
@@ -766,6 +766,7 @@ class XmlEditorGUI(QMainWindow):
         for path in self.donnees_et_types :
             if self.donnees_et_types[path][1] == "el" :
                 table = self.donnees_et_types[path][0]
+                print(table)
                 if type(table[0][0]) == tuple :
                     col = len(table[0])
                     row = len(table)
@@ -777,7 +778,8 @@ class XmlEditorGUI(QMainWindow):
                             value = [table[i][j]]
                             field = Field(name, typef, path, value )
                             self.dataAsField.append(field)
-                            print(field)
+                            #print(field.name, field.value)
+                    
                     
                     
                 else :
@@ -799,7 +801,27 @@ class XmlEditorGUI(QMainWindow):
                 self.dataAsField.append(field)
                 # print(field.name, field.type, field.path, field.value)
         
-
+    def save(self):
+        """
+        Save data
+        
+        Returns
+        -------
+        None.
+        
+        """
+        self.extractDataAndType()
+        self.getDataAsField()
+        
+        # for i in range(len(self.dataAsField)):
+        #     if self.dataAsField[i].name == "NumCode":
+        #         print(self.dataAsField[i].value)
+        
+        
+        self.data_xml_structure.updateData(self.dataAsField)
+        self.data_xml_structure.convert2File()
+        print("sauvé")
+    
 
 if __name__ == "__main__":
     
