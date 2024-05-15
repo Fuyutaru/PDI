@@ -8,6 +8,7 @@
             <Specifs>
                <hihi>bool</hihi>
                <hoho>bool</hoho>
+               <str>std::string</str>
                <coco>bool bool bool</coco>
                <toto>"enum_TypeCodedTarget" "enum_TypeCodedTarget"</toto>
                <Type>"enum_TypeCodedTarget"</Type>

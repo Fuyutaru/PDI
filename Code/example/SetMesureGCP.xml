@@ -9,7 +9,7 @@
             <el>
                <Name>std::string</Name>
                <Pt>double double double</Pt>
-               <Opt:Sigma2>double double double double double double</Opt:Sigma2>
+               <OptSigma2>double double double double double double</OptSigma2>
             </el>
          </Measures>
       </SetGCP>

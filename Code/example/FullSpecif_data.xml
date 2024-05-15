@@ -2,12 +2,13 @@
 <Root>
    <Type>"MMVII_Serialization"</Type>
    <Version>"0.0.0"</Version>
-   <Data><FullSpecifTarget><BitEncoding><Specifs><hihi></hihi>
-               <hoho></hoho>
-               <coco></coco>
-               <toto>"IGNIndoor" "IGNIndoor"</toto>
+   <Data><FullSpecifTarget><BitEncoding><Specifs><hihi>1</hihi>
+               <hoho>True</hoho>
+               <str></str>
+               <coco>True True True</coco>
+               <toto>"IGNDroneTop" "IGNIndoor"</toto>
                <Type>"IGNIndoor"</Type>
-               <NbBits></NbBits>
+               <NbBits>-3</NbBits>
                <FreqCircEq></FreqCircEq>
                <MinHammingD></MinHammingD>
                <UseHammingCode></UseHammingCode>
