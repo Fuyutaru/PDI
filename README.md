@@ -6,6 +6,7 @@ Avant de commencer l'installation, assurez-vous d'avoir les éléments suivants 
 
 - Environnement avec Python 3.9 ou supérieur
 - La bibliothèque lxml installée
+- la bibliothèque PyQt5 installée
 
 ## Étapes d'Installation
 
